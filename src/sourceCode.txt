@@ -1,15 +1,16 @@
 BEGIN CODE
-Int x,y,z
+Int x,y,z =-5
 #FLOAT t=12.6
-x=y=z=12
+x=y=z=-12
+#y =-5+-9(-45*-2)*(-5+4)
 BOOL a ="true",b="false"
 # this is a commenthhfghhfghgfhfg
-#SCAN: a,z5
+#SCAN: a,b
 #DISPLAY: x y [THIS is \n escape]
 #IF(x=2)
 #BEGIN IF
 #x=5
 #END IF
-DISPLAY: x & $ & y & $ & z & "[]]" []]
+DISPLAY: x & $ & y & $ & z & "[]]"
 END CODE
 #EFEFEFE

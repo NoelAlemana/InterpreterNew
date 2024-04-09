@@ -17,7 +17,35 @@ class Lexer {
         }
 
         char currentChar = input.charAt(position);
+        // Handle unary operators for numeric literals
+        if (currentChar == '-' || currentChar == '+') {
+            if (position + 1 < input.length() && Character.isDigit(input.charAt(position + 1)) && isOperator(input.charAt(position-1))) {
+                StringBuilder numberBuilder = new StringBuilder();
+                numberBuilder.append(currentChar);
+                position++;
+                currentChar = input.charAt(position);
 
+                while (position < input.length() && (Character.isDigit(currentChar) || currentChar == '.')) {
+                    numberBuilder.append(currentChar);
+                    position++;
+                    if (position < input.length())
+                        currentChar = input.charAt(position);
+                }
+
+                // If it's a float, return as FLOAT type, else return as NUMBER type
+                String numberLiteral = numberBuilder.toString();
+                if (numberLiteral.equals("-") || numberLiteral.equals("+")) {
+                    // Only the unary operator without the numeric literal
+                    return new Token(Token.Type.OPERATOR, numberLiteral);
+                } else if (numberLiteral.contains(".")) {
+                    // It's a float
+                    return new Token(Token.Type.FLOAT, numberLiteral);
+                } else {
+                    // It's an integer
+                    return new Token(Token.Type.NUMBER, numberLiteral);
+                }
+            }
+        }
         // Handle identifiers and keywords
         if (Character.isLetter(currentChar)) {
             StringBuilder identifierBuilder = new StringBuilder();
@@ -261,5 +289,8 @@ class Lexer {
         // Case sensitive, starts with a letter or underscore, followed by letters, underscores, or digits
         return identifier.matches("[a-zA-Z_][a-zA-Z0-9_]*");
     }
-
+    private boolean isOperator(char c) {
+        // Define your operator characters here
+        return "+-*/() =".indexOf(c) != -1;
+    }
 }
