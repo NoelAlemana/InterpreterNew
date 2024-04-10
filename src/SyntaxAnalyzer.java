@@ -12,7 +12,7 @@ class SyntaxAnalyzer {
         this.begin_code = false;
         this.variables = new HashMap<>();
         this.scanner = new Scanner(System.in);
-    }
+;    }
     private Token peek() {
         if (currentTokenIndex < tokens.size()) {
             return tokens.get(currentTokenIndex + 1);
@@ -183,22 +183,40 @@ class SyntaxAnalyzer {
         match(Token.Type.IDENTIFIER);
         match(Token.Type.ASSIGNMENT, "=");
 
-        Token newValue = null; // Initialize new value token
+        List<Token> tokens = new LinkedList<>();
+
         while (currToken().getType() != Token.Type.NEWLINE) {
             if (currToken().getType() == Token.Type.ASSIGNMENT) {
                 consume(); // Consume the ASSIGNMENT token
-            }if (currToken().getType() == Token.Type.IDENTIFIER) {
+            }else if (currToken().getType() == Token.Type.IDENTIFIER) {
                 identifiers.add(currToken());
                 consume(); // Consume the ASSIGNMENT token
-            } else {
-                newValue = currToken(); // Store the new value token
-                consume();
+            }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL){
+                while(currToken().getType() != Token.Type.NEWLINE){
+                    if(currToken().getType() == Token.Type.IDENTIFIER){
+                        System.out.println(variables.get(currToken().getValue()));
+                        tokens.add(variables.get(currToken().getValue()));
+                        consume();
+                    }else{
+                        //TODO: Add new Token(DELIMITER,()) when peek.getType() == OPERATOR.
+                        tokens.add(currToken());
+                        consume();
+                    }
+                }
             }
         }
+        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
         for(Token var: identifiers){
-            if(variables.containsKey(var.getValue()))
-                variables.get(var.getValue()).setValue(newValue.getValue());
-            else error("Variable: " +var.getValue()+" must be declared first");
+            if(variables.containsKey(var.getValue())){
+                if(isLogicalStatement(tokens)){
+                    LogicalCalculator logicalCalculator = new LogicalCalculator();
+                    variables.get(var.getValue()).setValue(Boolean.toString(logicalCalculator.evaluate(tokens)));
+                }else if(containsFloat(tokens))
+                    variables.get(var.getValue()).setValue(Double.toString(Calculator.evaluateArithmeticExpression(tokens,Token.Type.FLOAT)));
+                else
+                    variables.get(var.getValue()).setValue(Integer.toString(Calculator.evaluateArithmeticExpression(tokens)));
+            }
+            else error("Variable: " + var +" must be declared first");
         }
         match(Token.Type.NEWLINE);
 
@@ -328,5 +346,21 @@ class SyntaxAnalyzer {
 
     private void error(String message) {
         throw new RuntimeException("Syntax error: " + message);
+    }
+    public static boolean containsFloat(List<Token> tokens) {
+        for (Token token : tokens) {
+            if (token.getType() == Token.Type.FLOAT) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static boolean isLogicalStatement(List<Token> tokens) {
+        for (Token token : tokens) {
+            if (token.getValue().equals("==")||token.getValue().equals("<>")||token.getValue().equals(">=")||token.getValue().equals("<=")||token.getValue().equals(">")||token.getValue().equals("<")||token.getValue().equals("and")||token.getValue().equals("or")||token.getValue().equals("not")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -269,7 +269,7 @@ class Lexer {
     // Function to check if a string is a keyword or special token
     private boolean isKeywordOrSpecialToken(String identifier) {
         // For simplicity, let's assume some keywords and special tokens
-        List<String> keywordsAndSpecialTokens = List.of("if", "else", "while", "for","char","int", "float", "double","bool", "return", "begin", "end","code","scan","display");
+        List<String> keywordsAndSpecialTokens = List.of("if", "else", "while", "for","char","int", "float", "double","bool", "return", "begin", "end","code","scan","display","and","or","not");
         return keywordsAndSpecialTokens.contains(identifier.toLowerCase());
     }
     // Function to check if a string is a Boolean Literal

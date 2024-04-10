@@ -1,29 +1,18 @@
 BEGIN CODE
-    INT x,y,z =-5
-    #FLOAT t=12.6
-    x=y=z=-12
-    #y =-5+-9(-45*-2)*(-5+4)
-    BOOL a ="true",b="false"
-    # this is a commenthhfghhfghgfhfg
-    INT i=2
-    #SCAN: a,b
-    #DISPLAY: x y [THIS is \n escape]
-    IF(i==2)
-    BEGIN IF
-        x=5
-    END IF
-    ELSE IF(i==5)
-    BEGIN IF
-        x=1
-    END IF
-    ELSE IF(i==0)
-    BEGIN IF
-        x=9
-    END IF
-    ELSE
-    BEGIN IF
-        x=1
-    END IF
-    DISPLAY: x & $ & y & $ & z & [hello]
+Int a=100, b=200, c=300
+FLOAT t
+#x=y=z=-12
+#t=5%3
+#y =-5+-9(-45*-2)*(-5+4)
+BOOL d ="true",e="false"
+d= ((a < b) AND (c <> 200))
+# this is a commenthhfghhfghgfhfg
+#SCAN: a,b
+#DISPLAY: x y [THIS is \n escape]
+#IF(x=2)
+#BEGIN IF
+#x=5
+#END IF
+DISPLAY: d & $ & d & $ & t & "[]]"
 END CODE
 #EFEFEFE
