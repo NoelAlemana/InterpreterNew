@@ -1,9 +1,11 @@
 BEGIN CODE
-Int x,y,z =-5
-#FLOAT t=12.6
-x=y=z=-12
+Int a=100, b=200, c=300
+FLOAT t
+#x=y=z=-12
+#t=5%3
 #y =-5+-9(-45*-2)*(-5+4)
-BOOL a ="true",b="false"
+BOOL d ="true",e="false"
+d= ((a < b) AND (c <> 200))
 # this is a commenthhfghhfghgfhfg
 #SCAN: a,b
 #DISPLAY: x y [THIS is \n escape]
@@ -11,6 +13,6 @@ BOOL a ="true",b="false"
 #BEGIN IF
 #x=5
 #END IF
-DISPLAY: x & $ & y & $ & z & "[]]"
+DISPLAY: d & $ & d & $ & t & "[]]"
 END CODE
 #EFEFEFE
