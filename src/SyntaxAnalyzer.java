@@ -45,6 +45,8 @@ class SyntaxAnalyzer {
             Token currentToken = tokens.get(currentTokenIndex);
             if (currentToken.getType() == Token.Type.IDENTIFIER) {
                 assignmentStatement();
+            } else if(currentToken.getType() == Token.Type.NEWLINE){
+                consume();
             } else if (currentToken.getType() == Token.Type.KEYWORD && currentToken.getValue().equals("begin")) {
                 consume();
                 if(tokens.get(currentTokenIndex).getValue().equals("code")){
@@ -68,7 +70,7 @@ class SyntaxAnalyzer {
                     else error("Expected a EOF");
                 }
                 else if(tokens.get(currentTokenIndex).getValue().equals("if")){ // BEGIN IF
-
+                    
                 }
             } else if (currentToken.getType() == Token.Type.KEYWORD && (currentToken.getValue().equals("int") || currentToken.getValue().equals("char") || currentToken.getValue().equals("bool") || currentToken.getValue().equals("float"))) {
                 declareStatement();
@@ -76,7 +78,10 @@ class SyntaxAnalyzer {
                 displayStatement();
             }else if (currentToken.getType() == Token.Type.KEYWORD && currentToken.getValue().equals("scan")) {
                 scanStatement();
-            }// TODO: make all the different handlers
+            }else if (currentToken.getType() == Token.Type.KEYWORD && currentToken.getValue().equals("if")){
+                ifStatement();
+            }
+            // TODO: make all the different handlers
             else {
                 error("Invalid statement:" + currentToken);
             }
@@ -114,7 +119,7 @@ class SyntaxAnalyzer {
                 }catch (NullPointerException e){
                     if(variables.containsKey(currToken().getValue()))
                         System.out.print("null");
-                    else throw new RuntimeException("Varible: "+ currToken().getValue() + " is not yet declared");
+                    else throw new RuntimeException("Variable: "+ currToken().getValue() + " is not yet declared");
                 }
                 consume();
             }else if(currToken().getType() == Token.Type.CONCAT){
@@ -201,13 +206,66 @@ class SyntaxAnalyzer {
 
     private void ifStatement() {
         match(Token.Type.KEYWORD, "if");
-        expression();
-        match(Token.Type.KEYWORD, "then");
-        statement();
+        match(Token.Type.DELIMITER, "(");
+        ifExpression();
+        match(Token.Type.DELIMITER, ")");
+        consume(); //the consume function calls just consume the newlines (it throws an error if you dont consume the newline)
+        match(Token.Type.KEYWORD, "begin");
+        match(Token.Type.KEYWORD, "if");
+        consume();
+        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+            statement();
+        }
+        match(Token.Type.KEYWORD, "end");
+        match(Token.Type.KEYWORD, "if"); //first if statement finished
+        consume();
+        //check for multiple alternatives
+        while (true) {
+            if(currToken().getType() == Token.Type.KEYWORD && currToken().getValue().equals("else")){ //if else keyword encountered
+                consume();
+                if(currToken().getType() == Token.Type.KEYWORD && currToken().getValue().equals("if")){ //should keep checking for else ifs
+                    consume();
+                    match(Token.Type.DELIMITER, "(");
+                    ifExpression();
+                    match(Token.Type.DELIMITER, ")");
+                    consume();
+                    match(Token.Type.KEYWORD, "begin");
+                    match(Token.Type.KEYWORD, "if");
+                    consume();
+                    while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                        statement();
+                    }
+                    match(Token.Type.KEYWORD, "end");
+                    match(Token.Type.KEYWORD, "if");
+                    consume();
+                } else {
+                    consume();
+                    match(Token.Type.KEYWORD, "begin");
+                    match(Token.Type.KEYWORD, "if");
+                    consume();
+                    while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                        statement();
+                    }
+                    match(Token.Type.KEYWORD, "end");
+                    match(Token.Type.KEYWORD, "if");
+                    consume();
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
     }
 
     private void expression() {
-        literal();
+        
+    }
+
+    private void ifExpression(){
+        System.out.println("nisud sa if");
+        while(currToken().getType()!=Token.Type.DELIMITER && currToken().getValue()!=")"){
+            consume();
+        }
     }
 
     private void literal() {
@@ -256,7 +314,8 @@ class SyntaxAnalyzer {
             if (currentToken.getType() == expectedType && currentToken.getValue().equals(expectedValue)) {
                 consume();
             } else {
-                error("Unexpected token type or value, expected " + expectedType + " '" + expectedValue + "'");
+                error("Unexpected token type or value, expected " + expectedType + " '" + expectedValue + "'"
+                + "Current token: " + currToken().getType() + ", " + currToken().getValue());
             }
         }
     }
