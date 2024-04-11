@@ -194,7 +194,7 @@ class SyntaxAnalyzer {
             }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL|| currToken().getType() == Token.Type.IDENTIFIER){
                 while(currToken().getType() != Token.Type.NEWLINE){
                     if(currToken().getType() == Token.Type.IDENTIFIER){
-                        System.out.println(variables.get(currToken().getValue()));
+//                        System.out.println(variables.get(currToken().getValue()));
                         tokens.add(variables.get(currToken().getValue()));
                         consume();
                     }else{
@@ -205,7 +205,7 @@ class SyntaxAnalyzer {
                 }
             }
         }
-        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
+//        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
         for(Token var: identifiers){
             if(variables.containsKey(var.getValue())){
                 if(isLogicalStatement(tokens)){
