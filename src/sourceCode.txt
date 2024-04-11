@@ -4,9 +4,9 @@ Int a=100, b=200, c=300
 #FLOAT t
 #x=y=z=-12
 #t=5%3
-a = b%a
-#BOOL d ="true",e="false"
-#d= ((a < b) AND (c <> 200))
+#a = b%a
+BOOL d ="true",e="false"
+d= (d OR e AND c <> 200)
 # this is a commenthhfghhfghgfhfg
 #DISPLAY: a b
 #SCAN: a, b
@@ -14,6 +14,6 @@ a = b%a
 #BEGIN IF
 #x=5
 #END IF
-DISPLAY: a & $ & b & $ & c & "[]]"
+DISPLAY: d & $ & a & $ & c & "[]]"
 END CODE
 #EFEFEFE

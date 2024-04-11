@@ -120,17 +120,17 @@ public class LogicalCalculator {
                         result = operand1Num != operand2Num;
                         break;
                     default:
-                        System.out.println("Invalid operator: " + operator.getValue());
+//                        System.out.println("Invalid operator: " + operator.getValue());
                 }
             }
 
             // Push result onto operand stack
             operandStack.push(new Token(Token.Type.BOOL, String.valueOf(result)));
-            System.out.println("Result pushed onto operand stack: " + result);
+//            System.out.println("Result pushed onto operand stack: " + result);
         }
 
-        System.out.println("Operand Stack: " + operandStack);
-        System.out.println("Operator Stack: " + operatorStack);
-        System.out.println("--------------------");
+//        System.out.println("Operand Stack: " + operandStack);
+//        System.out.println("Operator Stack: " + operatorStack);
+//        System.out.println("--------------------");
     }
 }
