@@ -28,6 +28,7 @@ public class Main {
             // Close the BufferedReader
             bufferedReader.close();
             // Create a Lexer instance
+            //System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
             System.out.println("Tokens:-----------------");

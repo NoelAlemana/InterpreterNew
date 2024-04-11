@@ -114,7 +114,7 @@ class SyntaxAnalyzer {
                 }catch (NullPointerException e){
                     if(variables.containsKey(currToken().getValue()))
                         System.out.print("null");
-                    else throw new RuntimeException("Varible: "+ currToken().getValue() + " is not yet declared");
+                    else throw new RuntimeException("Variable: "+ currToken().getValue() + " is not yet declared");
                 }
                 consume();
             }else if(currToken().getType() == Token.Type.CONCAT){
@@ -183,10 +183,10 @@ class SyntaxAnalyzer {
         while (currToken().getType() != Token.Type.NEWLINE) {
             if (currToken().getType() == Token.Type.ASSIGNMENT) {
                 consume(); // Consume the ASSIGNMENT token
-            }else if (currToken().getType() == Token.Type.IDENTIFIER) {
+            }else if (currToken().getType() == Token.Type.IDENTIFIER && peek().getType() != Token.Type.OPERATOR&& peek().getType() != Token.Type.NEWLINE&& peek().getType() != Token.Type.DELIMITER) {
                 identifiers.add(currToken());
                 consume(); // Consume the ASSIGNMENT token
-            }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL){
+            }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL|| currToken().getType() == Token.Type.IDENTIFIER){
                 while(currToken().getType() != Token.Type.NEWLINE){
                     if(currToken().getType() == Token.Type.IDENTIFIER){
                         System.out.println(variables.get(currToken().getValue()));
