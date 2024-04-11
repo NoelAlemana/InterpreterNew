@@ -33,10 +33,13 @@ public class Main {
             List<Token> tokens = new ArrayList<>();
             System.out.println("Tokens:-----------------");
             Token token;
+            int index = 0; // Initialize index counter
+
             do {
                 token = lexer.getNextToken();
                 tokens.add(token);
-                System.out.println(token);
+                System.out.println(token + " Index: " + index);
+                index++;
             } while (token.getType() != Token.Type.EOF);
             System.out.println("End of Tokens----------");
 

@@ -1,19 +1,23 @@
 BEGIN CODE
 Int a=100, b=200, c=300
 #int a=100
-#FLOAT t
-#x=y=z=-12
-#t=5%3
-#a = b%a
+CHAR u = '*'
 BOOL d ="true",e="false"
-d= (d OR e AND c <> 200)
+d= (a < b AND c <>200)
 # this is a commenthhfghhfghgfhfg
-#DISPLAY: a b
-#SCAN: a, b
-#IF(x=2)
-#BEGIN IF
-#x=5
-#END IF
-DISPLAY: d & $ & a & $ & c & "[]]"
+#DISPLAY: a d c
+WHILE (a<105)
+BEGIN WHILE
+a = a+1
+c = c+1
+   WHILE (b<205)
+   BEGIN WHILE
+   b = b+1
+   c = c+1
+   END WHILE
+   c = c+1
+   DISPLAY: "THE"
+END WHILE
+DISPLAY: a $ b $ c $ d
 END CODE
 #EFEFEFE
