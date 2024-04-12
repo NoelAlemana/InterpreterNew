@@ -35,6 +35,13 @@ class SyntaxAnalyzer {
             error("Unexpected tokens after end of program " + currentTokenIndex +":"+tokens.size());
         }
     }
+    public int countNewline(int from, int to) {
+        int count =0;
+        for(int i = from; i < to+1;i++){
+            if(tokens.get(i).getType() == Token.Type.NEWLINE) count++;
+        }
+        return count;
+    }
 
     private void statement() {
         if(!begin_code && !tokens.get(currentTokenIndex).getValue().equals("begin") && !tokens.get(currentTokenIndex).getValue().equals("code")) {
@@ -69,8 +76,11 @@ class SyntaxAnalyzer {
                     if(currToken().getType() == Token.Type.EOF) consume();
                     else error("Expected a EOF");
                 }
-                else if(tokens.get(currentTokenIndex).getValue().equals("if")){ // BEGIN IF
-                    
+                else if(tokens.get(currentTokenIndex).getValue().equals("if")){ // END IF
+
+                }
+                else if(tokens.get(currentTokenIndex).getValue().equals("while")){ // END WHILE
+                consume();
                 }
             } else if (currentToken.getType() == Token.Type.KEYWORD && (currentToken.getValue().equals("int") || currentToken.getValue().equals("char") || currentToken.getValue().equals("bool") || currentToken.getValue().equals("float"))) {
                 declareStatement();
@@ -80,12 +90,68 @@ class SyntaxAnalyzer {
                 scanStatement();
             }else if (currentToken.getType() == Token.Type.KEYWORD && currentToken.getValue().equals("if")){
                 ifStatement();
+            }else if (currentToken.getType() == Token.Type.KEYWORD && currentToken.getValue().equals("while")){
+                whileStatement();
             }
             // TODO: make all the different handlers
             else {
                 error("Invalid statement:" + currentToken);
             }
         }
+    }
+    private void whileStatement(){
+        match(Token.Type.KEYWORD,"while");
+        List<Token> expressionTokens = new LinkedList<>();
+        while(currToken().getType()!= Token.Type.NEWLINE){
+//            System.out.println("Current: "+currToken());
+            expressionTokens.add(currToken());
+            consume();
+        }
+        match(Token.Type.NEWLINE);
+        for (Token token: expressionTokens) {
+//            System.out.println(token+" Expression tokens");
+        }
+        match(Token.Type.KEYWORD,"begin");
+        match(Token.Type.KEYWORD,"while");
+        match(Token.Type.NEWLINE);
+        int startwhileIndex = currentTokenIndex;
+        int nestedCount = 0;
+
+        while(true){
+            if(currToken().getValue().equals("begin") && peek().getValue().equals("while"))
+                nestedCount++;
+            if(currToken().getValue().equals("end") && peek().getValue().equals("while"))
+                nestedCount--;
+            if(nestedCount == -1){
+                break;
+            }
+            consume();
+        }
+//        System.out.println("Cur: "+ currToken());
+//        System.out.println("Peek: "+ peek());
+
+        int endwhileIndex = currentTokenIndex;
+
+//        System.out.println("First Result: "+expression(expressionTokens));
+
+        while (Boolean.parseBoolean(expression(expressionTokens).toString())){
+//            System.out.println("Result: "+expression(expressionTokens));
+            currentTokenIndex = startwhileIndex;
+//            parse();
+//            parseFromTo(startwhileIndex,endwhileIndex);
+            for(int i=0;i< countNewline(startwhileIndex,endwhileIndex);i++){
+                statement();
+            }
+        }
+//        System.out.println("Start: "+ startwhileIndex);
+//        System.out.println("End: "+ endwhileIndex);
+
+        //match(Token.Type.NEWLINE);
+        currentTokenIndex = endwhileIndex;
+
+        //System.out.println(currToken());
+
+
     }
     private void scanStatement() {
 //        System.out.println("Display");
@@ -168,14 +234,12 @@ class SyntaxAnalyzer {
                 consume(); // Consume DELIMITER token
                 variables.put(varname,new Token(expectedDataType,null));
 //                System.out.println(initializedVariables.containsKey(varname)+varname);
-//                System.out.println(currToken()+"ASdasdasdsdad");
             }else if(currToken().getType() == Token.Type.NEWLINE){
                 variables.put(varname,new Token(expectedDataType,null));
 //                System.out.println(initializedVariables.containsKey(varname)+varname);
-//                System.out.println(currToken()+"ASdasdasdsdad");
             }else error("Unexpected token type: " + currToken());
         }
-        consume(); // Consume NEWLINE token
+        match(Token.Type.NEWLINE);
     }
     private void assignmentStatement() {
         ArrayList<Token> identifiers = new ArrayList<>();
@@ -188,24 +252,37 @@ class SyntaxAnalyzer {
         while (currToken().getType() != Token.Type.NEWLINE) {
             if (currToken().getType() == Token.Type.ASSIGNMENT) {
                 consume(); // Consume the ASSIGNMENT token
-            }else if (currToken().getType() == Token.Type.IDENTIFIER) {
+            }else if (currToken().getType() == Token.Type.IDENTIFIER && peek().getType() != Token.Type.OPERATOR&& peek().getType() != Token.Type.NEWLINE&& peek().getType() != Token.Type.DELIMITER) {
                 identifiers.add(currToken());
                 consume(); // Consume the ASSIGNMENT token
-            }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL){
+            }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL|| currToken().getType() == Token.Type.IDENTIFIER){
                 while(currToken().getType() != Token.Type.NEWLINE){
+                    if(peek().getValue().equals(">") ||peek().getValue().equals("<") ||peek().getValue().equals("<>") ||peek().getValue().equals("==") ||peek().getValue().equals(">=") ||peek().getValue().equals("<=")||peek().getValue().equals("and")||peek().getValue().equals("or")){
+                        tokens.add(new Token(Token.Type.DELIMITER,"("));
+                        if(currToken().getType() == Token.Type.IDENTIFIER) {
+                            tokens.add(variables.get(currToken().getValue()));
+                        }else tokens.add(currToken());
+                        consume();
+                        tokens.add(currToken());
+                        consume();
+                        if(currToken().getType() == Token.Type.IDENTIFIER) {
+                            tokens.add(variables.get(currToken().getValue()));
+                        }else tokens.add(currToken());
+                        consume();
+                        tokens.add(new Token(Token.Type.DELIMITER,")"));
+                    }
                     if(currToken().getType() == Token.Type.IDENTIFIER){
-                        System.out.println(variables.get(currToken().getValue()));
+//                        System.out.println(variables.get(currToken().getValue()));
                         tokens.add(variables.get(currToken().getValue()));
                         consume();
                     }else{
-                        //TODO: Add new Token(DELIMITER,()) when peek.getType() == OPERATOR.
                         tokens.add(currToken());
                         consume();
                     }
                 }
             }
         }
-        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
+//        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
         for(Token var: identifiers){
             if(variables.containsKey(var.getValue())){
                 if(isLogicalStatement(tokens)){
@@ -286,8 +363,57 @@ class SyntaxAnalyzer {
         }
     }
 
-    private void expression() {
-        literal();
+    private Object expression(List<Token> expressionTokens) {
+        List<Token> tokens = new LinkedList<>();
+        for (Token token: expressionTokens){
+//            System.out.println("Original Tokens: "+token);
+            if(token.getType() == Token.Type.IDENTIFIER)
+                tokens.add(variables.get(token.getValue()));
+            else tokens.add(token);
+        }
+
+//        for (Token token: tokens){
+//            System.out.println("Valued Tokens: "+token);
+//        }
+
+        ListIterator<Token> iterator = tokens.listIterator();
+
+        while (iterator.hasNext()) {
+            Token token = iterator.next();
+            if (token.getType() == Token.Type.OPERATOR) {
+                // Insert a new token two steps after the current position
+                for (int i = 0; i < 1 && iterator.hasNext(); i++) {
+                    iterator.next();
+                }
+                iterator.add(new Token(Token.Type.DELIMITER, ")")); // Adjust the type and value accordingly
+                // Move the iterator back to the original position
+                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
+                    iterator.previous();
+                }
+                // Insert a new token two steps before the current position
+                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
+                    iterator.previous();
+                }
+                iterator.add(new Token(Token.Type.DELIMITER, "(")); // Adjust the type and value accordingly
+                // Move the iterator back to the original position
+                for (int i = 0; i < 2 && iterator.hasNext(); i++) {
+                    iterator.next();
+                }
+            }
+        }
+
+//        for (Token token: tokens){
+//            System.out.println("Enclosed Tokens: "+token);
+//        }
+        Object result = null;
+        if(isLogicalStatement(tokens)){
+            LogicalCalculator logicalCalculator = new LogicalCalculator();
+            result = Boolean.toString(logicalCalculator.evaluate(tokens));
+        }else if(containsFloat(tokens))
+            result = Double.toString(Calculator.evaluateArithmeticExpression(tokens,Token.Type.FLOAT));
+        else
+            result = Integer.toString(Calculator.evaluateArithmeticExpression(tokens));
+        return result;
     }
 
     List<Token> tokensForIf;
@@ -349,7 +475,7 @@ class SyntaxAnalyzer {
                 consume();
             } else {
                 error("Unexpected token type or value, expected " + expectedType + " '" + expectedValue + "'"
-                + "Current token: " + currToken().getType() + ", " + currToken().getValue());
+                + " Current token: " + currToken().getType() + ", " + currToken().getValue());
             }
         }
     }

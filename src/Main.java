@@ -28,14 +28,18 @@ public class Main {
             // Close the BufferedReader
             bufferedReader.close();
             // Create a Lexer instance
+            //System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
             System.out.println("Tokens:-----------------");
             Token token;
+            int index = 0; // Initialize index counter
+
             do {
                 token = lexer.getNextToken();
                 tokens.add(token);
-                System.out.println(token);
+                System.out.println(token + " Index: " + index);
+                index++;
             } while (token.getType() != Token.Type.EOF);
             System.out.println("End of Tokens----------");
 

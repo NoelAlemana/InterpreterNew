@@ -12,7 +12,7 @@ public class LogicalCalculator {
     public boolean evaluate(List<Token> tokens) {
         for (Token token : tokens) {
             // Visualize token being processed
-            System.out.println("Processing token: " + token);
+//            System.out.println("Processing token: " + token);
 
             if (token.getType() == Token.Type.BOOL || token.getType() == Token.Type.NUMBER || token.getType() == Token.Type.FLOAT) {
                 operandStack.push(token);
@@ -35,9 +35,9 @@ public class LogicalCalculator {
             }
 
             // Visualize operand stack and operator stack after processing current token
-            System.out.println("Operand Stack: " + operandStack);
-            System.out.println("Operator Stack: " + operatorStack);
-            System.out.println("--------------------");
+//            System.out.println("Operand Stack: " + operandStack);
+//            System.out.println("Operator Stack: " + operatorStack);
+//            System.out.println("--------------------");
         }
 
         while (!operatorStack.isEmpty()) {
@@ -66,13 +66,13 @@ public class LogicalCalculator {
 
     private void performOperation() {
         Token operator = operatorStack.pop();
-        System.out.println("Operator: " + operator);
+//        System.out.println("Operator: " + operator);
 
         if (operator.getType() == Token.Type.KEYWORD && operator.getValue().equalsIgnoreCase("NOT")) {
             Token operand = operandStack.pop();
             boolean operandValue = Boolean.parseBoolean(operand.getValue());
             operandStack.push(new Token(Token.Type.BOOL, String.valueOf(!operandValue)));
-            System.out.println("NOT operand: " + operand.getValue());
+//            System.out.println("NOT operand: " + operand.getValue());
         } else {
             Token operand2 = operandStack.pop();
             Token operand1 = operandStack.pop();
@@ -120,17 +120,17 @@ public class LogicalCalculator {
                         result = operand1Num != operand2Num;
                         break;
                     default:
-                        System.out.println("Invalid operator: " + operator.getValue());
+//                        System.out.println("Invalid operator: " + operator.getValue());
                 }
             }
 
             // Push result onto operand stack
             operandStack.push(new Token(Token.Type.BOOL, String.valueOf(result)));
-            System.out.println("Result pushed onto operand stack: " + result);
+//            System.out.println("Result pushed onto operand stack: " + result);
         }
 
-        System.out.println("Operand Stack: " + operandStack);
-        System.out.println("Operator Stack: " + operatorStack);
-        System.out.println("--------------------");
+//        System.out.println("Operand Stack: " + operandStack);
+//        System.out.println("Operator Stack: " + operatorStack);
+//        System.out.println("--------------------");
     }
 }

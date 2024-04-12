@@ -1,19 +1,23 @@
 BEGIN CODE
-    Int a=100, b=200, c=300
-    FLOAT t=12
-    #x=y=z=-12
-    #t=5%3
-    #y =-5+-9(-45*-2)*(-5+4)
-    BOOL d ="true",e="false"
-    INT x, i=1
-    d= ((a < b) AND (c <> 200))
-    # this is a commenthhfghhfghgfhfg
-    #SCAN: a,b
-    #DISPLAY: x y [THIS is \n escape]
-    IF(i==1)
-    BEGIN IF
-        x=5
-    END IF
-    DISPLAY: x  & "awdwdad otens"
+Int a=100, b=200, c=300
+#int a=100
+CHAR u = '*'
+BOOL d ="true",e="false"
+d= (a < b AND c <>200)
+# this is a commenthhfghhfghgfhfg
+#DISPLAY: a d c
+WHILE (a<105)
+BEGIN WHILE
+a = a+1
+c = c+1
+   WHILE (b<205)
+   BEGIN WHILE
+   b = b+1
+   c = c+1
+   END WHILE
+   c = c+1
+   DISPLAY: "THE"
+END WHILE
+DISPLAY: a $ b $ c $ d
 END CODE
 #EFEFEFE
