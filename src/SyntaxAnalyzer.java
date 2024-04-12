@@ -219,20 +219,25 @@ class SyntaxAnalyzer {
             else error("Variable: " + var +" must be declared first");
         }
         match(Token.Type.NEWLINE);
-
     }
 
     private void ifStatement() {
         match(Token.Type.KEYWORD, "if");
         match(Token.Type.DELIMITER, "(");
-        ifExpression();
+        Boolean parseStatement = ifExpression();
         match(Token.Type.DELIMITER, ")");
         consume(); //the consume function calls just consume the newlines (it throws an error if you dont consume the newline)
         match(Token.Type.KEYWORD, "begin");
         match(Token.Type.KEYWORD, "if");
         consume();
-        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
-            statement();
+        if(parseStatement){
+            while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                statement();
+            }
+        } else{
+            while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                consume();
+            }
         }
         match(Token.Type.KEYWORD, "end");
         match(Token.Type.KEYWORD, "if"); //first if statement finished
@@ -244,14 +249,20 @@ class SyntaxAnalyzer {
                 if(currToken().getType() == Token.Type.KEYWORD && currToken().getValue().equals("if")){ //should keep checking for else ifs
                     consume();
                     match(Token.Type.DELIMITER, "(");
-                    ifExpression();
+                    Boolean parseStatement2 = ifExpression();
                     match(Token.Type.DELIMITER, ")");
                     consume();
                     match(Token.Type.KEYWORD, "begin");
                     match(Token.Type.KEYWORD, "if");
                     consume();
-                    while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
-                        statement();
+                    if(parseStatement2){
+                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                            statement();
+                        }
+                    } else {
+                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                            consume();
+                        }
                     }
                     match(Token.Type.KEYWORD, "end");
                     match(Token.Type.KEYWORD, "if");
@@ -276,14 +287,19 @@ class SyntaxAnalyzer {
     }
 
     private void expression() {
-        
+        literal();
     }
 
-    private void ifExpression(){
+    List<Token> tokensForIf;
+    private boolean ifExpression(){
         System.out.println("nisud sa if");
+        LogicalCalculator logicalCalculator = new LogicalCalculator();
         while(currToken().getType()!=Token.Type.DELIMITER && currToken().getValue()!=")"){
+            System.out.println(currToken().getValue());
+            // tokensForIf.add(currToken());
             consume();
         }
+        return false;
     }
 
     private void literal() {

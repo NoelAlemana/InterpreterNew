@@ -1,18 +1,19 @@
 BEGIN CODE
-Int a=100, b=200, c=300
-FLOAT t
-#x=y=z=-12
-#t=5%3
-#y =-5+-9(-45*-2)*(-5+4)
-BOOL d ="true",e="false"
-d= ((a < b) AND (c <> 200))
-# this is a commenthhfghhfghgfhfg
-#SCAN: a,b
-#DISPLAY: x y [THIS is \n escape]
-#IF(x=2)
-#BEGIN IF
-#x=5
-#END IF
-DISPLAY: d & $ & d & $ & t & "[]]"
+    Int a=100, b=200, c=300
+    FLOAT t=12
+    #x=y=z=-12
+    #t=5%3
+    #y =-5+-9(-45*-2)*(-5+4)
+    BOOL d ="true",e="false"
+    INT x, i=1
+    d= ((a < b) AND (c <> 200))
+    # this is a commenthhfghhfghgfhfg
+    #SCAN: a,b
+    #DISPLAY: x y [THIS is \n escape]
+    IF(i==1)
+    BEGIN IF
+        x=5
+    END IF
+    DISPLAY: x  & "awdwdad otens"
 END CODE
 #EFEFEFE
