@@ -1,11 +1,14 @@
 BEGIN CODE
 Int a=100, b=200, c=300
+Int er=20,in=30
+er = (er - in) * 10
 #int a=100
 CHAR u = '*'
 BOOL d ="true",e="false"
 d= (a < b AND c <>200)
 # this is a commenthhfghhfghgfhfg
 #DISPLAY: a d c
+DISPLAY: er $
 WHILE (a<105)
 BEGIN WHILE
 a = a+1
@@ -16,8 +19,8 @@ c = c+1
    c = c+1
    END WHILE
    c = c+1
-   DISPLAY: "THE"
+   DISPLAY: "THE" 
 END WHILE
-DISPLAY: a $ b $ c $ d
+DISPLAY: $ a $ b $ c $ d
 END CODE
 #EFEFEFE

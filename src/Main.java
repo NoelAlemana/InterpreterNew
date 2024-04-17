@@ -4,8 +4,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import Arithmetic.ArithInterpreter;
 
 public class Main {
+
+    static Scanner scanner = new Scanner(System.in);
 
     // Main method
     public static void main(String[] args) {
@@ -62,5 +66,36 @@ public class Main {
             System.err.println("Error reading file: " + e.getMessage());
         }
 
+        System.out.println("Simple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
+        System.out.println("type END to quit program.\n");
+       
+        run();
+
     }
+
+   
+
+    /**
+     * Runs the interpreter and prints result to console
+     */
+    public static void run() {
+        boolean flag = true;
+        while (flag) {
+            System.out.print("> ");
+            String input = scanner.nextLine();
+  
+            if (input.equals("END")) {
+                flag = false;
+            }
+            else if (input.equals("")) System.out.println(0);
+            else {
+                try {
+                    System.out.println(ArithInterpreter.getResult(input));
+                } catch (Exception ignored) {
+                    System.out.println("Invalid Input");
+                }
+            }
+        }
+    }
+
 }
