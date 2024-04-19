@@ -1,4 +1,5 @@
 import java.util.*;
+import Arithmetic.ArithInterpreter;
 
 class SyntaxAnalyzer {
     private List<Token> tokens;
@@ -58,7 +59,7 @@ class SyntaxAnalyzer {
                 consume();
                 if(tokens.get(currentTokenIndex).getValue().equals("code")){
                     consume();
-                    System.out.println("Code is now Running");
+//                    System.out.println("Code is now Running");
                     begin_code = true;
                     if(currToken().getType() == Token.Type.NEWLINE) consume();
                     else error("Expected a NEWLINE");
@@ -70,14 +71,13 @@ class SyntaxAnalyzer {
                 consume();
                 if(tokens.get(currentTokenIndex).getValue().equals("code")){
                     consume();
-                    System.out.println("\nFinished Coding");
+//                    System.out.println("\nFinished Coding");
                     if(currToken().getType() == Token.Type.NEWLINE) consume();
                     else error("Expected a NEWLINE");
                     if(currToken().getType() == Token.Type.EOF) consume();
                     else error("Expected a EOF");
                 }
                 else if(tokens.get(currentTokenIndex).getValue().equals("if")){ // END IF
-
                 }
                 else if(tokens.get(currentTokenIndex).getValue().equals("while")){ // END WHILE
                 consume();
@@ -226,10 +226,59 @@ class SyntaxAnalyzer {
                 consume(); // Consume ASSIGNMENT token
                 if(variables.containsKey(varname))throw new IllegalArgumentException("Variable name: " + varname + " is already declared");
                 if(expectedDataType == Token.Type.FLOAT && currToken().getType() == Token.Type.NUMBER) currToken().setType(Token.Type.FLOAT);
-                if(currToken().getType() != expectedDataType) throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
-                variables.put(varname,currToken());
+                if(currToken().getType() != expectedDataType ){
+                    if(currToken().getType() == Token.Type.IDENTIFIER){
+                        Token.Type varDataType = variables.get(currToken().getValue()).getType();
+                        switch (varDataType){
+                            case CHAR:
+                                if(expectedDataType != Token.Type.CHAR)
+                                    throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+varDataType);
+                                break;
+                            case NUMBER:
+                            case FLOAT:
+                                if(expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL)
+                                    throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+varDataType);
+                                break;
+                            case BOOL:
+                                if(expectedDataType != Token.Type.BOOL)
+                                    throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+varDataType);
+                                break;
+                        }
+                    }
+                    if((expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL) && (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT))
+                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
+                    if((currToken().getType() == Token.Type.CHAR || currToken().getType() == Token.Type.BOOL) && (expectedDataType == Token.Type.NUMBER || expectedDataType == Token.Type.FLOAT))
+                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
+                }
+//                System.out.println(currToken());
+                if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER) {
+                    if(expectedDataType == Token.Type.NUMBER){
+                        currToken().setValue(Integer.toString((int)currToken().getDataType()));
+                    }
+                    variables.put(varname, currToken());
 //                System.out.println("Declared "+varname+": " +initializedVariables.get(varname));
-                consume();
+                    consume();
+                }else {
+                    StringBuilder tokenValuesBuilder = new StringBuilder();
+                    while (currToken().getType() != Token.Type.NEWLINE && currToken().getType() != Token.Type.DELIMITER) {
+
+                        if(currToken().getType() == Token.Type.IDENTIFIER) {
+                            tokenValuesBuilder.append(variables.get(currToken().getValue()).getDataType());
+                        }
+                        else
+                            tokenValuesBuilder.append(currToken().getValue());
+                        consume();
+                    }
+//                    System.out.println(tokenValuesBuilder.toString());
+                    try {
+                        if(expectedDataType == Token.Type.NUMBER)
+                            variables.put(varname, new Token(expectedDataType,Integer.toString((int)ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
+                        else
+                            variables.put(varname, new Token(expectedDataType,Double.toString(ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }else if(currToken().getValue().equals(",")){
                 consume(); // Consume DELIMITER token
                 variables.put(varname,new Token(expectedDataType,null));
@@ -285,13 +334,27 @@ class SyntaxAnalyzer {
 //        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
         for(Token var: identifiers){
             if(variables.containsKey(var.getValue())){
+                StringBuilder tokenValuesBuilder = new StringBuilder();
+                for (Token token : tokens) {
+                    // Append the value of each token to the StringBuilder
+                    if(token.getType() == Token.Type.IDENTIFIER) tokenValuesBuilder.append(variables.get(token.getValue()));
+                    else tokenValuesBuilder.append(token.getValue());
+                }
                 if(isLogicalStatement(tokens)){
                     LogicalCalculator logicalCalculator = new LogicalCalculator();
                     variables.get(var.getValue()).setValue(Boolean.toString(logicalCalculator.evaluate(tokens)));
                 }else if(containsFloat(tokens))
-                    variables.get(var.getValue()).setValue(Double.toString(Calculator.evaluateArithmeticExpression(tokens,Token.Type.FLOAT)));
+                    try{
+                        variables.get(var.getValue()).setValue(Double.toString(ArithInterpreter.getResult(tokenValuesBuilder.toString())));
+                    } catch (Exception ignored) {
+                        System.out.println("Invalid Input");
+                    }
                 else
-                    variables.get(var.getValue()).setValue(Integer.toString(Calculator.evaluateArithmeticExpression(tokens)));
+                    try{
+                        variables.get(var.getValue()).setValue(Integer.toString((int)ArithInterpreter.getResult(tokenValuesBuilder.toString())));
+                    } catch (Exception ignored) {
+                        System.out.println("Invalid Input");
+                    }
             }
             else error("Variable: " + var +" must be declared first");
         }
@@ -299,6 +362,7 @@ class SyntaxAnalyzer {
     }
 
     private void ifStatement() {
+        //Issues: IF(True), ELSE IF(T). Both will execute
         match(Token.Type.KEYWORD, "if");
         match(Token.Type.DELIMITER, "(");
         Boolean parseStatement = ifExpression();
@@ -312,14 +376,29 @@ class SyntaxAnalyzer {
                 statement();
             }
         } else{
-            while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+//            while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+//                consume();
+//            }
+            int nestedCount = 0;
+            while(true){
+//                System.out.println("Concomed: " + currToken() + " Count: " + nestedCount);
+                if(currToken().getValue().equals("begin") && peek().getValue().equals("if"))
+                    nestedCount++;
+                if(currToken().getValue().equals("end") && peek().getValue().equals("if"))
+                    nestedCount--;
+                if(nestedCount == -1){
+                    break;
+                }
                 consume();
             }
         }
         match(Token.Type.KEYWORD, "end");
         match(Token.Type.KEYWORD, "if"); //first if statement finished
         consume();
-        //check for multiple alternatives
+        List<Boolean> ifelseResult = new LinkedList<>();
+        ifelseResult.add(parseStatement);
+//        check for multiple alternatives
+
         while (true) {
             if(currToken().getType() == Token.Type.KEYWORD && currToken().getValue().equals("else")){ //if else keyword encountered
                 consume();
@@ -332,15 +411,27 @@ class SyntaxAnalyzer {
                     match(Token.Type.KEYWORD, "begin");
                     match(Token.Type.KEYWORD, "if");
                     consume();
-                    if(parseStatement2){
+                    if(parseStatement2 && !ifelseResult.contains(true)){
                         while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
                             statement();
                         }
                     } else {
-                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+//                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+//                            consume();
+//                        }
+                        int nestedCount = 0;
+                        while(true){
+                            if(currToken().getValue().equals("begin") && peek().getValue().equals("if"))
+                                nestedCount++;
+                            if(currToken().getValue().equals("end") && peek().getValue().equals("if"))
+                                nestedCount--;
+                            if(nestedCount == -1){
+                                break;
+                            }
                             consume();
                         }
                     }
+                    ifelseResult.add(parseStatement2);
                     match(Token.Type.KEYWORD, "end");
                     match(Token.Type.KEYWORD, "if");
                     consume();
@@ -349,8 +440,27 @@ class SyntaxAnalyzer {
                     match(Token.Type.KEYWORD, "begin");
                     match(Token.Type.KEYWORD, "if");
                     consume();
-                    while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
-                        statement();
+//                    System.out.println(ifelseResult.contains(true));
+                    if(ifelseResult.contains(true)){
+//                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+//                            consume();
+//                        }
+                        int nestedCount = 0;
+                        while(true){
+//                System.out.println("Concomed: " + currToken() + " Count: " + nestedCount);
+                            if(currToken().getValue().equals("begin") && peek().getValue().equals("if"))
+                                nestedCount++;
+                            if(currToken().getValue().equals("end") && peek().getValue().equals("if"))
+                                nestedCount--;
+                            if(nestedCount == -1){
+                                break;
+                            }
+                            consume();
+                        }
+                    } else {
+                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
+                            statement();
+                        }
                     }
                     match(Token.Type.KEYWORD, "end");
                     match(Token.Type.KEYWORD, "if");
@@ -361,6 +471,7 @@ class SyntaxAnalyzer {
                 break;
             }
         }
+
     }
 
     private Object expression(List<Token> expressionTokens) {
@@ -416,16 +527,20 @@ class SyntaxAnalyzer {
         return result;
     }
 
-    List<Token> tokensForIf;
     private boolean ifExpression(){
-        System.out.println("nisud sa if");
+//        System.out.println("nisud sa if");
         LogicalCalculator logicalCalculator = new LogicalCalculator();
+        List<Token> tokensForIf = new LinkedList<>();
         while(currToken().getType()!=Token.Type.DELIMITER && currToken().getValue()!=")"){
-            System.out.println(currToken().getValue());
-            // tokensForIf.add(currToken());
+//            System.out.print(currToken().getValue());
+             tokensForIf.add(currToken());
             consume();
         }
-        return false;
+        for (Token token : tokensForIf) {
+//            System.out.println(token);
+        }
+//        System.out.println("\nResult: "+ logicalCalculator.evaluate(tokensForIf));
+        return Boolean.parseBoolean(expression(tokensForIf).toString());
     }
 
     private void literal() {
@@ -486,6 +601,11 @@ class SyntaxAnalyzer {
         currentTokenIndex++;
     }
 
+    private void consumePrint() {
+        System.out.print("Consumed Token:");
+        System.out.println(tokens.get(currentTokenIndex));
+        currentTokenIndex++;
+    }
     private void error(String message) {
         throw new RuntimeException("Syntax error: " + message);
     }
