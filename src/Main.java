@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import Arithmetic.ArithInterpreter;
+import Arithmetic.MathTokenizer;
 
 public class Main {
 
@@ -68,6 +69,8 @@ public class Main {
 
         System.out.println("Simple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
         System.out.println("type END to quit program.\n");
+
+       
        
         run();
 
@@ -83,14 +86,16 @@ public class Main {
         while (flag) {
             System.out.print("> ");
             String input = scanner.nextLine();
-  
+
             if (input.equals("END")) {
                 flag = false;
             }
             else if (input.equals("")) System.out.println(0);
             else {
                 try {
-                    System.out.println(ArithInterpreter.getResult(input));
+                    //System.out.println(ArithInterpreter.getResult(input));
+
+                    System.out.println(ArithInterpreter.getLogicalResult(input));
                 } catch (Exception ignored) {
                     System.out.println("Invalid Input");
                 }

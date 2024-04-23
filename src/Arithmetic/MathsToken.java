@@ -10,7 +10,19 @@ public class MathsToken {
         DIVIDE,
         MODULO,
         PAREN_OPEN,
-        PAREN_CLOSE
+        PAREN_CLOSE,
+
+        //Logical operators
+        EQUAL,
+        
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL,
+        LESS_THAN_OR_EQUAL,
+        LESS_THAN,
+        AND,
+        OR,
+        NOT,
+        NOT_EQUAL
     }
 
     public final MatTokenType type;
