@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import Arithmetic.ArithInterpreter;
@@ -36,7 +37,7 @@ public class Main {
             //System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
-            System.out.println("Tokens:-----------------");
+//            System.out.println("Tokens:-----------------");
             Token token;
             int index = 0; // Initialize index counter
 
@@ -67,16 +68,14 @@ public class Main {
             System.err.println("Error reading file: " + e.getMessage());
         }
 
-        System.out.println("Simple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
+        System.out.println("\nSimple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
         System.out.println("type END to quit program.\n");
 
-       
-       
         run();
 
     }
 
-   
+
 
     /**
      * Runs the interpreter and prints result to console
@@ -93,7 +92,7 @@ public class Main {
             else if (input.equals("")) System.out.println(0);
             else {
                 try {
-                    //System.out.println(ArithInterpreter.getResult(input));
+                    System.out.println(ArithInterpreter.getResult(input));
 
                     System.out.println(ArithInterpreter.getLogicalResult(input));
                 } catch (Exception ignored) {

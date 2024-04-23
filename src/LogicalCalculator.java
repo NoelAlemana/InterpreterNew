@@ -99,7 +99,7 @@ public class LogicalCalculator {
                 double operand1Num = Double.parseDouble(operand1.getValue());
                 double operand2Num = Double.parseDouble(operand2.getValue());
 
-                // Apply arithmetic operator
+                // Apply Compare operator
                 switch (operator.getValue()) {
                     case ">":
                         result = operand1Num > operand2Num;

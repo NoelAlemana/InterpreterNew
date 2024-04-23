@@ -1,26 +1,40 @@
 BEGIN CODE
 Int a=100, b=200, c=300
-Int er=20,in=30
-er = (er - in) * 10
 #int a=100
 CHAR u = '*'
 BOOL d ="true",e="false"
 d= (a < b AND c <>200)
 # this is a commenthhfghhfghgfhfg
-#DISPLAY: a d c
-DISPLAY: er $
-WHILE (a<105)
-BEGIN WHILE
-a = a+1
-c = c+1
-   WHILE (b<205)
-   BEGIN WHILE
-   b = b+1
-   c = c+1
-   END WHILE
-   c = c+1
-   DISPLAY: "THE" 
-END WHILE
-DISPLAY: $ a $ b $ c $ d
+DISPLAY: "Before:" $ a $ b $ c $ d $
+IF (a>105)
+BEGIN IF
+b=1000
+END IF
+ELSE IF (a<200)
+BEGIN IF
+a = 3
+    IF (a==3)
+    BEGIN IF
+    a = 2
+    c = 2
+    END IF
+c = 3
+END IF
+ELSE
+BEGIN IF
+c = 9
+END IF
+DISPLAY: "After:" $ a $ b $ c $ d $
+a = 15
+b = a%3
+IF(b == 0)
+BEGIN IF
+DISPLAY: "FIZZ"
+END IF
+b = a%5
+IF(b == 0)
+BEGIN IF
+DISPLAY: "BUZZ"
+END IF
 END CODE
 #EFEFEFE
