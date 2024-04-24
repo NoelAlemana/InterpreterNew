@@ -42,7 +42,7 @@ public class MathTokenizer {
   
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
-            
+            String s = String.valueOf(c);
             // if character is a digit, create and add new token
 
             if (Character.isDigit(c) || c == '.') {
@@ -67,26 +67,20 @@ public class MathTokenizer {
                 i = j - 1;
             }
             // if it is an operation, add to operation token
-            else if (operationChars.containsKey(c) || logicalOperationChars.containsKey(input)) {
+            else if (operationChars.containsKey(c)) {
                 MathsToken token = new MathsToken(operationChars.get(c));
                 tokenList.add(token);
 
-                MathsToken logicToken = new MathsToken(logicalOperationChars.get(input));
-                tokenList.add(logicToken);
+               
             }
 
              // if it is Logical Operator, add to logicals token
-            /*else if(input.contains("==") || input.contains(">=") || input.contains("<=") || 
-            input.contains("<") || input.contains(">") || input.contains("&&") || 
-            input.contains("||") || input.contains("!") || input.contains("!=")){
-          
+            else if(logicalOperationChars.containsKey(String.valueOf(c))){
         
-                MathsToken logicToken = new MathsToken(logicalOperationChars.get("=="));
+                MathsToken logicToken = new MathsToken(logicalOperationChars.get(String.valueOf(c)));
                 tokenList.add(logicToken);
-                MathsToken logicToken2 = new MathsToken(logicalOperationChars.get(">="));
-                tokenList.add(logicToken2);
-
-            }*/
+                
+            }
 
 
             // else if it isn't a valid character, throw exception

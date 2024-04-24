@@ -94,7 +94,7 @@ public class Main {
                 try {
                     System.out.println(ArithInterpreter.getResult(input));
 
-                    System.out.println(ArithInterpreter.getLogicalResult(input));
+                    //System.out.println(ArithInterpreter.getLogicalResult(input));
                 } catch (Exception ignored) {
                     System.out.println("Invalid Input");
                 }

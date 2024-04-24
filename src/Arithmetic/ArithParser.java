@@ -36,6 +36,12 @@ public class ArithParser {
                 } else if (current.type == MathsToken.MatTokenType.MINUS) {
                     currentExpr = new ArithTokenNode(MathsToken.MatTokenType.MINUS, currentExpr, term(tokenIter.next()));
                 } 
+
+
+                else if(current.type == MathsToken.MatTokenType.EQUAL){
+                    currentExpr = new ArithTokenNode(MathsToken.MatTokenType.EQUAL, currentExpr, term(tokenIter.next()));
+                }
+
                 // unexpected tokens found
                 else {
                     tokenIter.previous();
@@ -62,10 +68,6 @@ public class ArithParser {
                     currentTerm = new ArithTokenNode(MathsToken.MatTokenType.MULTIPLY, currentTerm, expression(current));
                 } else if (current.type == MathsToken.MatTokenType.MODULO) {
                     currentTerm = new ArithTokenNode(MathsToken.MatTokenType.MODULO, currentTerm, factor(tokenIter.next()));
-                }
-
-                else if(current.type == MathsToken.MatTokenType.EQUAL){
-                    currentTerm = new ArithTokenNode(MathsToken.MatTokenType.EQUAL, currentTerm, factor(tokenIter.next()));
                 }
                 // unexpected token found
                 else {
