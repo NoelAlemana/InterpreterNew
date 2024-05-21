@@ -290,7 +290,7 @@ class SyntaxAnalyzer {
                         throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
                 }
 //                System.out.println(currToken());
-                if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER) {
+                if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER && currToken().getType() != Token.Type.DELIMITER) {
                     if(expectedDataType == Token.Type.NUMBER){
                         currToken().setValue(Integer.toString((int)currToken().getDataType()));
                     }

@@ -1,6 +1,5 @@
 BEGIN CODE
-INT a = 56+5(1)
-a = a*0
+INT a = (5+1+5),b=3
 IF(a<0)
   BEGIN IF
    DISPLAY: "NEGATIVE"
@@ -17,4 +16,5 @@ ELSE
   BEGIN IF
    DISPLAY: "ZERO"
   END IF
+DISPLAY: a
 END CODE
