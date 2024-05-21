@@ -56,7 +56,6 @@ class Lexer {
                     currentChar = input.charAt(position);
             }
             String identifier = identifierBuilder.toString();
-            if(isBooleanLiteral(identifier)) return new Token(Token.Type.BOOL, identifier.toLowerCase());
             // Check if it's a keyword or special token
             if (isKeywordOrSpecialToken(identifier)) {
                 return new Token(Token.Type.KEYWORD, identifier.toLowerCase());
@@ -73,7 +72,7 @@ class Lexer {
             StringBuilder numberBuilder = new StringBuilder();
             boolean isFloat = false;
 
-            while (position < input.length() && (Character.isDigit(currentChar) || currentChar == '.')) {
+            while (position < input.length() && (Character.isLetterOrDigit(currentChar) || currentChar == '.')) {
                 if (currentChar == '.') {
                     if (isFloat) {
                         // Second dot found, invalid token
@@ -86,7 +85,10 @@ class Lexer {
                 if (position < input.length())
                     currentChar = input.charAt(position);
             }
-
+            if (numberBuilder.toString().matches(".*[a-zA-Z].*")) {
+                // It contains letters, so return as IDENTIFIER
+                return new Token(Token.Type.IDENTIFIER, numberBuilder.toString());
+            }
             // If it's a float, return as FLOAT type, else return as NUMBER type
             if (isFloat) {
                 return new Token(Token.Type.FLOAT, numberBuilder.toString());
@@ -269,14 +271,14 @@ class Lexer {
     // Function to check if a string is a keyword or special token
     private boolean isKeywordOrSpecialToken(String identifier) {
         // For simplicity, let's assume some keywords and special tokens
-        List<String> keywordsAndSpecialTokens = List.of("if", "else", "while", "for","char","int", "float", "double","bool", "return", "begin", "end","code","scan","display","and","or","not");
-        return keywordsAndSpecialTokens.contains(identifier.toLowerCase());
+        List<String> keywordsAndSpecialTokens = List.of("IF", "ELSE", "WHILE", "FOR","CHAR","INT", "FLOAT", "DOUBLE","BOOL", "RETURN", "BEGIN", "END","CODE","SCAN","DISPLAY","AND","OR","NOT");
+        return keywordsAndSpecialTokens.contains(identifier);
     }
     // Function to check if a string is a Boolean Literal
     private boolean isBooleanLiteral(String identifier) {
         // For simplicity, let's assume some keywords and special tokens
-        List<String> keywordsAndSpecialTokens = List.of("true","false");
-        return keywordsAndSpecialTokens.contains(identifier.toLowerCase());
+        List<String> keywordsAndSpecialTokens = List.of("TRUE","FALSE");
+        return keywordsAndSpecialTokens.contains(identifier);
     }
 
     // Function to check if a character is a delimiter
@@ -292,5 +294,17 @@ class Lexer {
     private boolean isOperator(char c) {
         // Define your operator characters here
         return "+-*/() =".indexOf(c) != -1;
+    }
+    private boolean isNewLineOrConcat(char c) {
+        // Define your operator characters here
+        return "@&".indexOf(c) != -1;
+    }
+    private void curr() {
+        // Define your operator characters here
+        System.out.println(input.charAt(position));
+    }
+    private void curr(int num) {
+        // Define your operator characters here
+        System.out.println(input.charAt(position+num));
     }
 }

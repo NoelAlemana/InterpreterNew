@@ -1,40 +1,20 @@
 BEGIN CODE
-Int a=100, b=200, c=300
-#int a=100
-CHAR u = '*'
-BOOL d ="true",e="false"
-d= (a < b AND c <>200)
-# this is a commenthhfghhfghgfhfg
-DISPLAY: "Before:" $ a $ b $ c $ d $
-IF (a>105)
-BEGIN IF
-b=1000
-END IF
-ELSE IF (a<200)
-BEGIN IF
-a = 3
-    IF (a==3)
-    BEGIN IF
-    a = 2
-    c = 2
-    END IF
-c = 3
-END IF
+INT a = 56+5(1)
+a = a*0
+IF(a<0)
+  BEGIN IF
+   DISPLAY: "NEGATIVE"
+  END IF
+ELSE IF(a>0)
+  BEGIN IF
+   DISPLAY: "POSITIVE" & $
+    IF(a>10)
+      BEGIN IF
+      DISPLAY: "MORE THAN 10" & $
+      END IF
+  END IF
 ELSE
-BEGIN IF
-c = 9
-END IF
-DISPLAY: "After:" $ a $ b $ c $ d $
-a = 15
-b = a%3
-IF(b == 0)
-BEGIN IF
-DISPLAY: "FIZZ"
-END IF
-b = a%5
-IF(b == 0)
-BEGIN IF
-DISPLAY: "BUZZ"
-END IF
+  BEGIN IF
+   DISPLAY: "ZERO"
+  END IF
 END CODE
-#EFEFEFE

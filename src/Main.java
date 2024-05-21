@@ -36,22 +36,26 @@ public class Main {
             //System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
-//            System.out.println("Tokens:-----------------");
+            System.out.println("Tokens:-----------------");
             Token token;
             int index = 0; // Initialize index counter
-
+            int line_number = 1;
             do {
                 token = lexer.getNextToken();
+                token.setLine(line_number);
                 tokens.add(token);
                 System.out.println(token + " Index: " + index);
                 index++;
+                if(token.getType() == Token.Type.NEWLINE) line_number++;
             } while (token.getType() != Token.Type.EOF);
             System.out.println("End of Tokens----------");
 
-
-            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(tokens);
-            syntaxAnalyzer.parse();
-
+//            try {
+                SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(tokens);
+                syntaxAnalyzer.parse();
+//            }catch (Exception e){
+//                System.err.println(e);
+//            }
 //            Lexer lexer1 = new Lexer(codeBuilder.toString());
 ////             Create a SyntaxAnalyzer instance
 //            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexer1);
@@ -67,10 +71,9 @@ public class Main {
             System.err.println("Error reading file: " + e.getMessage());
         }
 
-        System.out.println("\nSimple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
-        System.out.println("type END to quit program.\n");
-
-        run();
+//        System.out.println("\nSimple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
+//        System.out.println("type END to quit program.\n");
+//        run();
 
     }
 

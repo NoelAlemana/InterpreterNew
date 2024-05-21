@@ -99,6 +99,41 @@ class SyntaxAnalyzer {
             }
         }
     }
+    private void displayStatement(){
+        match(Token.Type.KEYWORD,"display");
+        match(Token.Type.DELIMITER,":");
+
+        while(currToken().getType() != Token.Type.NEWLINE){
+            List<Token> tokens = new LinkedList<>();
+            while(currToken().getType() != Token.Type.CONCAT){
+                tokens.add(currToken());
+                consume();
+                if(currToken().getType() == Token.Type.NEWLINE) break;
+            }
+//            System.out.println(currToken()+"fsdfsf");
+            if(currToken().getType() != Token.Type.NEWLINE)
+                match(Token.Type.CONCAT);
+//            for(Token token: tokens) System.out.println(token);
+            if(tokens.size() == 1){
+                if(tokens.get(0).getType() == Token.Type.IDENTIFIER){
+                    try{
+                        System.out.print(variables.get(tokens.get(0).getValue()).getDataType());
+                    }catch (NullPointerException e){
+                        if(variables.containsKey(tokens.get(0).getValue()))
+                            System.out.print("null");
+                        else throw new RuntimeException("Variable: "+ tokens.get(0) + " is not yet declared");
+                    }
+                }else if(tokens.get(0).getType() == Token.Type.STRING){
+                    if(tokens.get(0).getValue().equals("$")) System.out.println("");
+                    else System.out.print(tokens.get(0).getValue());
+                }
+            }else{
+                System.out.print(expression(tokens));
+            }
+            tokens.clear();
+        }
+        match(Token.Type.NEWLINE);
+    }
     private void whileStatement(){
         match(Token.Type.KEYWORD,"while");
         List<Token> expressionTokens = new LinkedList<>();
@@ -160,7 +195,7 @@ class SyntaxAnalyzer {
         while(currToken().getType() == Token.Type.IDENTIFIER || currToken().getType() == Token.Type.DELIMITER){
             if(currToken().getType() == Token.Type.IDENTIFIER){
                 try{
-                    System.out.println(currToken().getValue());
+//                    System.out.println(currToken().getValue());
                     if(variables.containsKey(currToken().getValue())){
                         String newValue = scanner.nextLine();
                         variables.get(currToken().getValue()).setValue(newValue);
@@ -174,30 +209,30 @@ class SyntaxAnalyzer {
         }
         match(Token.Type.NEWLINE);
     }
-    private void displayStatement() {
-//        System.out.println("Display");
-        consume();
-        consume();
-        while(currToken().getType() == Token.Type.IDENTIFIER || currToken().getType() == Token.Type.STRING|| currToken().getType() == Token.Type.CONCAT){
-            if(currToken().getType() == Token.Type.IDENTIFIER){
-                try{
-                    System.out.print(variables.get(currToken().getValue()).getDataType());
-                }catch (NullPointerException e){
-                    if(variables.containsKey(currToken().getValue()))
-                        System.out.print("null");
-                    else throw new RuntimeException("Variable: "+ currToken().getValue() + " is not yet declared");
-                }
-                consume();
-            }else if(currToken().getType() == Token.Type.CONCAT){
-                consume();
-            }else if(currToken().getType() == Token.Type.STRING){
-                if(currToken().getValue().equals("$")) System.out.println("");
-                else System.out.print(currToken().getValue());
-                consume();
-            }
-        }
-        match(Token.Type.NEWLINE);
-    }
+//    private void displayStatement() {
+////        System.out.println("Display");
+//        match(Token.Type.KEYWORD,"display");
+//        match(Token.Type.DELIMITER,":");
+//        while(currToken().getType() == Token.Type.IDENTIFIER || currToken().getType() == Token.Type.STRING|| currToken().getType() == Token.Type.CONCAT){
+//            if(currToken().getType() == Token.Type.IDENTIFIER){
+//                try{
+//                    System.out.print(variables.get(currToken().getValue()).getDataType());
+//                }catch (NullPointerException e){
+//                    if(variables.containsKey(currToken().getValue()))
+//                        System.out.print("null");
+//                    else throw new RuntimeException("Variable: "+ currToken().getValue() + " is not yet declared");
+//                }
+//                consume();
+//            }else if(currToken().getType() == Token.Type.CONCAT){
+//                consume();
+//            }else if(currToken().getType() == Token.Type.STRING){
+//                if(currToken().getValue().equals("$")) System.out.println("");
+//                else System.out.print(currToken().getValue());
+//                consume();
+//            }
+//        }
+//        match(Token.Type.NEWLINE);
+//    }
     private void declareStatement() {
         String datatype = currToken().getValue();
         Token.Type expectedDataType = null;
@@ -228,21 +263,25 @@ class SyntaxAnalyzer {
                 if(expectedDataType == Token.Type.FLOAT && currToken().getType() == Token.Type.NUMBER) currToken().setType(Token.Type.FLOAT);
                 if(currToken().getType() != expectedDataType ){
                     if(currToken().getType() == Token.Type.IDENTIFIER){
-                        Token.Type varDataType = variables.get(currToken().getValue()).getType();
-                        switch (varDataType){
-                            case CHAR:
-                                if(expectedDataType != Token.Type.CHAR)
-                                    throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+varDataType);
-                                break;
-                            case NUMBER:
-                            case FLOAT:
-                                if(expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL)
-                                    throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+varDataType);
-                                break;
-                            case BOOL:
-                                if(expectedDataType != Token.Type.BOOL)
-                                    throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+varDataType);
-                                break;
+                        try {
+                            Token.Type varDataType = variables.get(currToken().getValue()).getType();
+                            switch (varDataType) {
+                                case CHAR:
+                                    if (expectedDataType != Token.Type.CHAR)
+                                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: " + expectedDataType + " Defined datatype: " + varDataType + " " + currToken());
+                                    break;
+                                case NUMBER:
+                                case FLOAT:
+                                    if (expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL)
+                                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: " + expectedDataType + " Defined datatype: " + varDataType + " " + currToken());
+                                    break;
+                                case BOOL:
+                                    if (expectedDataType != Token.Type.BOOL)
+                                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: " + expectedDataType + " Defined datatype: " + varDataType + " " + currToken());
+                                    break;
+                            }
+                        }catch (NullPointerException e){
+                            error("Error causing token:" +currToken());
                         }
                     }
                     if((expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL) && (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT))
@@ -260,7 +299,7 @@ class SyntaxAnalyzer {
                     consume();
                 }else {
                     StringBuilder tokenValuesBuilder = new StringBuilder();
-                    while (currToken().getType() != Token.Type.NEWLINE && currToken().getType() != Token.Type.DELIMITER) {
+                    while (currToken().getType() != Token.Type.NEWLINE && !currToken().getValue().equals(",")) {
 
                         if(currToken().getType() == Token.Type.IDENTIFIER) {
                             tokenValuesBuilder.append(variables.get(currToken().getValue()).getDataType());
@@ -271,9 +310,9 @@ class SyntaxAnalyzer {
                     }
 //                    System.out.println(tokenValuesBuilder.toString());
                     try {
-                        if(expectedDataType == Token.Type.NUMBER)
-                            variables.put(varname, new Token(expectedDataType,Integer.toString((int)ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
-                        else
+                        if(expectedDataType == Token.Type.NUMBER) {
+                            variables.put(varname, new Token(expectedDataType, Integer.toString((int) ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
+                        }else
                             variables.put(varname, new Token(expectedDataType,Double.toString(ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -282,10 +321,8 @@ class SyntaxAnalyzer {
             }else if(currToken().getValue().equals(",")){
                 consume(); // Consume DELIMITER token
                 variables.put(varname,new Token(expectedDataType,null));
-//                System.out.println(initializedVariables.containsKey(varname)+varname);
             }else if(currToken().getType() == Token.Type.NEWLINE){
                 variables.put(varname,new Token(expectedDataType,null));
-//                System.out.println(initializedVariables.containsKey(varname)+varname);
             }else error("Unexpected token type: " + currToken());
         }
         match(Token.Type.NEWLINE);
@@ -478,8 +515,13 @@ class SyntaxAnalyzer {
         List<Token> tokens = new LinkedList<>();
         for (Token token: expressionTokens){
 //            System.out.println("Original Tokens: "+token);
-            if(token.getType() == Token.Type.IDENTIFIER)
+            if(token.getType() == Token.Type.IDENTIFIER) {
+                Token tok = variables.get(token.getValue());
+                if(tok != null)
                 tokens.add(variables.get(token.getValue()));
+                else
+                error(token + " is not declared");
+            }
             else tokens.add(token);
         }
 
@@ -487,51 +529,100 @@ class SyntaxAnalyzer {
 //            System.out.println("Valued Tokens: "+token);
 //        }
 
-        ListIterator<Token> iterator = tokens.listIterator();
-
-        while (iterator.hasNext()) {
-            Token token = iterator.next();
-            if (token.getType() == Token.Type.OPERATOR) {
-                // Insert a new token two steps after the current position
-                for (int i = 0; i < 1 && iterator.hasNext(); i++) {
-                    iterator.next();
-                }
-                iterator.add(new Token(Token.Type.DELIMITER, ")")); // Adjust the type and value accordingly
-                // Move the iterator back to the original position
-                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
-                    iterator.previous();
-                }
-                // Insert a new token two steps before the current position
-                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
-                    iterator.previous();
-                }
-                iterator.add(new Token(Token.Type.DELIMITER, "(")); // Adjust the type and value accordingly
-                // Move the iterator back to the original position
-                for (int i = 0; i < 2 && iterator.hasNext(); i++) {
-                    iterator.next();
-                }
-            }
-        }
+//        ListIterator<Token> iterator = tokens.listIterator();
+//
+//        while (iterator.hasNext()) {
+//            Token token = iterator.next();
+//            if (token.getType() == Token.Type.OPERATOR) {
+//                // Insert a new token two steps after the current position
+//                for (int i = 0; i < 1 && iterator.hasNext(); i++) {
+//                    iterator.next();
+//                }
+//                iterator.add(new Token(Token.Type.DELIMITER, ")")); // Adjust the type and value accordingly
+//                // Move the iterator back to the original position
+//                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
+//                    iterator.previous();
+//                }
+//                // Insert a new token two steps before the current position
+//                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
+//                    iterator.previous();
+//                }
+//                iterator.add(new Token(Token.Type.DELIMITER, "(")); // Adjust the type and value accordingly
+//                // Move the iterator back to the original position
+//                for (int i = 0; i < 2 && iterator.hasNext(); i++) {
+//                    iterator.next();
+//                }
+//            }
+//        }
 
 //        for (Token token: tokens){
 //            System.out.println("Enclosed Tokens: "+token);
 //        }
+
+        StringBuilder tokenValuesBuilder = new StringBuilder();
+        for (Token token: tokens){
+            tokenValuesBuilder.append(token.getValue());
+        }
+//        System.out.println(tokenValuesBuilder.toString());
         Object result = null;
         if(isLogicalStatement(tokens)){
             LogicalCalculator logicalCalculator = new LogicalCalculator();
-            result = Boolean.toString(logicalCalculator.evaluate(tokens));
-        }else if(containsFloat(tokens))
-            result = Double.toString(Calculator.evaluateArithmeticExpression(tokens,Token.Type.FLOAT));
-        else
-            result = Integer.toString(Calculator.evaluateArithmeticExpression(tokens));
+//            result = Boolean.toString(logicalCalculator.evaluate(tokens));
+//            System.out.println(tokens.get(0).getValue()+": first");
+            List<Token> logicalTokens = new LinkedList<>();
+            for(int i=0;i< tokens.size();i++){
+                if(i<tokens.size()-1) {
+                    if (isNumberorFloat(tokens.get(i)) && isArithOperator(tokens.get(i + 1))) {
+                        StringBuilder arithmeticBuilder = new StringBuilder();
+                        arithmeticBuilder.append(tokens.get(i).getValue());
+                        arithmeticBuilder.append(tokens.get(i + 1).getValue());
+                        arithmeticBuilder.append(tokens.get(i + 2).getValue());
+//                        System.out.println(arithmeticBuilder.toString() + "result");
+                        double res = 0;
+                        try {
+                            res = ArithInterpreter.getResult(arithmeticBuilder.toString());
+                        } catch (Exception e) {
+                            error("Invalid operation: " + arithmeticBuilder.toString());
+                        }
+                        Token newToken = new Token(Token.Type.FLOAT, Double.toString(res));
+                        logicalTokens.add(newToken);
+                        i+=2;
+                    }else{
+                        logicalTokens.add(tokens.get(i));
+                    }
+                }
+                if(i == tokens.size()-1)
+                logicalTokens.add(tokens.get(i));
+            }
+            for (Token tok: logicalTokens){
+//                System.out.println(tok.getValue() + "    statement");
+            }
+
+            result = Boolean.toString(logicalCalculator.evaluate(logicalTokens));
+        }else if(containsFloat(tokens)) {
+            try {
+                result = Double.toString(ArithInterpreter.getResult(tokenValuesBuilder.toString()));
+            } catch (Exception e) {
+                System.err.println("Invalid operation: " + tokenValuesBuilder.toString());
+            }
+        }
+        else{
+            try {
+                result = Integer.toString((int)ArithInterpreter.getResult(tokenValuesBuilder.toString()));
+            } catch (Exception e) {
+                System.err.println("Invalid operation: " + tokenValuesBuilder.toString());
+            }
+        }
         return result;
     }
 
     private boolean ifExpression(){
 //        System.out.println("nisud sa if");
+
         LogicalCalculator logicalCalculator = new LogicalCalculator();
         List<Token> tokensForIf = new LinkedList<>();
-        while(currToken().getType()!=Token.Type.DELIMITER && currToken().getValue()!=")"){
+
+        while(peek().getType()!=Token.Type.NEWLINE && currToken().getValue()!=")"){
 //            System.out.print(currToken().getValue());
              tokensForIf.add(currToken());
             consume();
@@ -589,8 +680,8 @@ class SyntaxAnalyzer {
             if (currentToken.getType() == expectedType && currentToken.getValue().equals(expectedValue)) {
                 consume();
             } else {
-                error("Unexpected token type or value, expected " + expectedType + " '" + expectedValue + "'"
-                + " Current token: " + currToken().getType() + ", " + currToken().getValue());
+                error("Unexpected token: expected " + expectedType + " '" + expectedValue + "'"
+                + " Current token: " + currToken());
             }
         }
     }
@@ -607,7 +698,7 @@ class SyntaxAnalyzer {
         currentTokenIndex++;
     }
     private void error(String message) {
-        throw new RuntimeException("Syntax error: " + message);
+        throw new RuntimeException("Error Occurred: " + message);
     }
     public static boolean containsFloat(List<Token> tokens) {
         for (Token token : tokens) {
@@ -617,9 +708,19 @@ class SyntaxAnalyzer {
         }
         return false;
     }
+    public static boolean isNumberorFloat(Token token) {
+        if(token.getType() == Token.Type.NUMBER || token.getType() == Token.Type.FLOAT)
+            return true;
+        return false;
+    }
+    public static boolean isArithOperator(Token token) {
+        if(token.getValue().equals("+")||token.getValue().equals("-")||token.getValue().equals("/")||token.getValue().equals("*")||token.getValue().equals("%"))
+            return true;
+        return false;
+    }
     public static boolean isLogicalStatement(List<Token> tokens) {
         for (Token token : tokens) {
-            if (token.getValue().equals("==")||token.getValue().equals("<>")||token.getValue().equals(">=")||token.getValue().equals("<=")||token.getValue().equals(">")||token.getValue().equals("<")||token.getValue().equals("and")||token.getValue().equals("or")||token.getValue().equals("not")) {
+            if (token.getValue().equals("==")||token.getValue().equals("<>")||token.getValue().equals(">=")||token.getValue().equals("<=")||token.getValue().equals(">")||token.getValue().equals("<")||token.getValue().equals("and")||token.getValue().equals("or")||token.getValue().equals("not")||token.getType() == Token.Type.BOOL) {
                 return true;
             }
         }

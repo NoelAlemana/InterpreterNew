@@ -1,8 +1,8 @@
 BEGIN CODE
 CHAR a = '*'
-int i=0,j=0
-int rows= 10
-DISPLAY: i $ j $ rows $
+INT i=0,j=0
+INT rows= 10
+DISPLAY: i & $ & j & $ & rows & $
 WHILE (i<rows)
 BEGIN WHILE
 j=0

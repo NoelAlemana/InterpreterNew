@@ -120,7 +120,7 @@ public class LogicalCalculator {
                         result = operand1Num != operand2Num;
                         break;
                     default:
-//                        System.out.println("Invalid operator: " + operator.getValue());
+                        System.out.println("Invalid operator: " + operator.getValue());
                 }
             }
 

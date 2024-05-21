@@ -18,6 +18,7 @@ class Token {
 
     private Type type;
     private String value;
+    private int line;
 
     public Token(Type type, String value) {
         this.type = type;
@@ -105,8 +106,17 @@ class Token {
                 throw new UnsupportedOperationException(toString());
         }
     }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
     @Override
     public String toString() {
-        return "(" + type + ": " + value + ")";
+        return "(" + type + ": " + value + ") at line: " + line;
     }
 }
