@@ -1,20 +1,5 @@
 BEGIN CODE
-INT a = (5+1+5),b=3
-IF(a<0)
-  BEGIN IF
-   DISPLAY: "NEGATIVE"
-  END IF
-ELSE IF(a>0)
-  BEGIN IF
-   DISPLAY: "POSITIVE" & $
-    IF(a>10)
-      BEGIN IF
-      DISPLAY: "MORE THAN 10" & $
-      END IF
-  END IF
-ELSE
-  BEGIN IF
-   DISPLAY: "ZERO"
-  END IF
+BOOL d = "FALSE", a
+d = "TRUE" AND a
 DISPLAY: a
 END CODE

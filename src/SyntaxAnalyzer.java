@@ -289,18 +289,18 @@ class SyntaxAnalyzer {
                     if((currToken().getType() == Token.Type.CHAR || currToken().getType() == Token.Type.BOOL) && (expectedDataType == Token.Type.NUMBER || expectedDataType == Token.Type.FLOAT))
                         throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
                 }
-//                System.out.println(currToken());
-                if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER && currToken().getType() != Token.Type.DELIMITER) {
+
+                if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER && currToken().getType() != Token.Type.DELIMITER&& currToken().getType() != Token.Type.BOOL) {
                     if(expectedDataType == Token.Type.NUMBER){
                         currToken().setValue(Integer.toString((int)currToken().getDataType()));
                     }
                     variables.put(varname, currToken());
-//                System.out.println("Declared "+varname+": " +initializedVariables.get(varname));
                     consume();
                 }else {
                     StringBuilder tokenValuesBuilder = new StringBuilder();
+                    List<Token> logicalTokens = new LinkedList<>();
                     while (currToken().getType() != Token.Type.NEWLINE && !currToken().getValue().equals(",")) {
-
+                        logicalTokens.add(currToken());
                         if(currToken().getType() == Token.Type.IDENTIFIER) {
                             tokenValuesBuilder.append(variables.get(currToken().getValue()).getDataType());
                         }
@@ -312,8 +312,12 @@ class SyntaxAnalyzer {
                     try {
                         if(expectedDataType == Token.Type.NUMBER) {
                             variables.put(varname, new Token(expectedDataType, Integer.toString((int) ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
-                        }else
+                        }else if(expectedDataType == Token.Type.FLOAT)
                             variables.put(varname, new Token(expectedDataType,Double.toString(ArithInterpreter.getResult(tokenValuesBuilder.toString()))));
+                        else if(expectedDataType == Token.Type.BOOL) {
+                            Object res = expression(logicalTokens);
+                            variables.put(varname, new Token(expectedDataType, res.toString()));
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -343,6 +347,7 @@ class SyntaxAnalyzer {
                 consume(); // Consume the ASSIGNMENT token
             }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL|| currToken().getType() == Token.Type.IDENTIFIER){
                 while(currToken().getType() != Token.Type.NEWLINE){
+
                     if(peek().getValue().equals(">") ||peek().getValue().equals("<") ||peek().getValue().equals("<>") ||peek().getValue().equals("==") ||peek().getValue().equals(">=") ||peek().getValue().equals("<=")||peek().getValue().equals("and")||peek().getValue().equals("or")){
                         tokens.add(new Token(Token.Type.DELIMITER,"("));
                         if(currToken().getType() == Token.Type.IDENTIFIER) {
@@ -362,6 +367,8 @@ class SyntaxAnalyzer {
                         tokens.add(variables.get(currToken().getValue()));
                         consume();
                     }else{
+//                        System.out.println(currToken()+"Peeking");
+
                         tokens.add(currToken());
                         consume();
                     }
@@ -525,39 +532,6 @@ class SyntaxAnalyzer {
             else tokens.add(token);
         }
 
-//        for (Token token: tokens){
-//            System.out.println("Valued Tokens: "+token);
-//        }
-
-//        ListIterator<Token> iterator = tokens.listIterator();
-//
-//        while (iterator.hasNext()) {
-//            Token token = iterator.next();
-//            if (token.getType() == Token.Type.OPERATOR) {
-//                // Insert a new token two steps after the current position
-//                for (int i = 0; i < 1 && iterator.hasNext(); i++) {
-//                    iterator.next();
-//                }
-//                iterator.add(new Token(Token.Type.DELIMITER, ")")); // Adjust the type and value accordingly
-//                // Move the iterator back to the original position
-//                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
-//                    iterator.previous();
-//                }
-//                // Insert a new token two steps before the current position
-//                for (int i = 0; i < 2 && iterator.hasPrevious(); i++) {
-//                    iterator.previous();
-//                }
-//                iterator.add(new Token(Token.Type.DELIMITER, "(")); // Adjust the type and value accordingly
-//                // Move the iterator back to the original position
-//                for (int i = 0; i < 2 && iterator.hasNext(); i++) {
-//                    iterator.next();
-//                }
-//            }
-//        }
-
-//        for (Token token: tokens){
-//            System.out.println("Enclosed Tokens: "+token);
-//        }
 
         StringBuilder tokenValuesBuilder = new StringBuilder();
         for (Token token: tokens){
