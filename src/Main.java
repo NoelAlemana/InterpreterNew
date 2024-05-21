@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import Arithmetic.ArithInterpreter;
+import Arithmetic.MathTokenizer;
 
 public class Main {
 
@@ -95,6 +96,8 @@ public class Main {
             else {
                 try {
                     System.out.println(ArithInterpreter.getResult(input));
+
+                    //System.out.println(ArithInterpreter.getLogicalResult(input));
                 } catch (Exception ignored) {
                     System.out.println("Invalid Input");
                 }

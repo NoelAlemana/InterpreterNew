@@ -9,6 +9,11 @@ public class ArithInterpreter {
     return evaluateExpressionTree(expressionTree);
 }
 
+public static boolean getLogicalResult(String inputString) throws Exception {
+    ArithTokenNode expressionTree = ArithParser.parseTokens(MathTokenizer.generateTokens(inputString));
+    return evaluateLogicalExpressionTree(expressionTree);
+}
+
 /**
  * Evaluates the result of the mathematical expression by recursively going through all the TokenNodes in the Parsed
  * Token Tree and evaluate the results at each node
@@ -41,4 +46,16 @@ private static double evaluateExpressionTree(ArithTokenNode node) {
         }
     }
 }
+
+private static boolean evaluateLogicalExpressionTree(ArithTokenNode node){
+    switch (node.type){
+        case EQUAL: {
+            return evaluateLogicalExpressionTree(node.operand1) == evaluateLogicalExpressionTree(node.operand2);       
+        }
+        default: {
+            throw new InternalError("Wrong Method");
+        } 
+    }
+}
+
 }

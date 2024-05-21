@@ -35,7 +35,13 @@ public class ArithParser {
                     currentExpr = new ArithTokenNode(MathsToken.MatTokenType.PLUS, currentExpr, term(tokenIter.next()));
                 } else if (current.type == MathsToken.MatTokenType.MINUS) {
                     currentExpr = new ArithTokenNode(MathsToken.MatTokenType.MINUS, currentExpr, term(tokenIter.next()));
+                } 
+
+
+                else if(current.type == MathsToken.MatTokenType.EQUAL){
+                    currentExpr = new ArithTokenNode(MathsToken.MatTokenType.EQUAL, currentExpr, term(tokenIter.next()));
                 }
+
                 // unexpected tokens found
                 else {
                     tokenIter.previous();
@@ -86,6 +92,7 @@ public class ArithParser {
     
                     return expr;
                 }
+
                 // a +ve expression/number found
                 case PLUS: {
                     return factor(tokenIter.next());
@@ -100,6 +107,7 @@ public class ArithParser {
                 case NUMBER: {
                     return new ArithTokenNode(current);
                 }
+
                 // unexpected token at start
                 default: {
                     throw new Exception();

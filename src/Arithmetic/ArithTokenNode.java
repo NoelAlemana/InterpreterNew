@@ -46,6 +46,7 @@ public class ArithTokenNode {
             res.append(this.nodeValue);
         } else {
             String format = "%s %c % s";
+            String logicFormat = "%s %s %s";
             switch (this.type) {
                 case PLUS: {
                     res.append(String.format(format, operand1, '+', operand2));
@@ -65,6 +66,11 @@ public class ArithTokenNode {
                 }
                 case MODULO: {
                     res.append(String.format(format, operand1, '%', operand2));
+                    break;
+                }
+                case EQUAL: {
+                    res.append(String.format(logicFormat, operand1, "==", operand2));
+                    break;
                 }
             }
         }

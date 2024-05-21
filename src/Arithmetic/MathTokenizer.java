@@ -3,8 +3,11 @@ package Arithmetic;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Arithmetic.MathsToken.MatTokenType;
+
 public class MathTokenizer {
     private static final HashMap<Character, MathsToken.MatTokenType> operationChars = new HashMap<>();
+    private static final HashMap<String, MathsToken.MatTokenType> logicalOperationChars = new HashMap<>();
 
     static {
         operationChars.put('+', MathsToken.MatTokenType.PLUS);
@@ -14,6 +17,18 @@ public class MathTokenizer {
         operationChars.put('%', MathsToken.MatTokenType.MODULO);
         operationChars.put('(', MathsToken.MatTokenType.PAREN_OPEN);
         operationChars.put(')', MathsToken.MatTokenType.PAREN_CLOSE);
+        
+
+        logicalOperationChars.put("==", MathsToken.MatTokenType.EQUAL);
+        logicalOperationChars.put("<", MathsToken.MatTokenType.LESS_THAN);
+        logicalOperationChars.put(">", MathsToken.MatTokenType.GREATER_THAN);
+        logicalOperationChars.put("<=", MathsToken.MatTokenType.LESS_THAN_OR_EQUAL);
+        logicalOperationChars.put(">=", MathsToken.MatTokenType.GREATER_THAN_OR_EQUAL);
+        logicalOperationChars.put("&&", MathsToken.MatTokenType.AND);
+        logicalOperationChars.put("||", MathsToken.MatTokenType.OR);
+        logicalOperationChars.put("!", MathsToken.MatTokenType.NOT);
+        logicalOperationChars.put("!=", MathsToken.MatTokenType.NOT_EQUAL);
+
     }
   
     /**
@@ -27,7 +42,9 @@ public class MathTokenizer {
   
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
+            String s = String.valueOf(c);
             // if character is a digit, create and add new token
+
             if (Character.isDigit(c) || c == '.') {
                 int j;
                 // iterate until the end of the number
@@ -53,7 +70,19 @@ public class MathTokenizer {
             else if (operationChars.containsKey(c)) {
                 MathsToken token = new MathsToken(operationChars.get(c));
                 tokenList.add(token);
+
+               
             }
+
+             // if it is Logical Operator, add to logicals token
+            else if(logicalOperationChars.containsKey(String.valueOf(c))){
+        
+                MathsToken logicToken = new MathsToken(logicalOperationChars.get(String.valueOf(c)));
+                tokenList.add(logicToken);
+                
+            }
+
+
             // else if it isn't a valid character, throw exception
             else if (!Character.isWhitespace(c)) throw new Exception();
         }
