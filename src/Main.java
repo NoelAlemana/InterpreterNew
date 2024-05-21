@@ -34,7 +34,7 @@ public class Main {
             // Close the BufferedReader
             bufferedReader.close();
             // Create a Lexer instance
-            //System.out.println(codeBuilder.toString());
+            // System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
             System.out.println("Tokens:-----------------");
@@ -47,24 +47,26 @@ public class Main {
                 tokens.add(token);
                 System.out.println(token + " Index: " + index);
                 index++;
-                if(token.getType() == Token.Type.NEWLINE) line_number++;
+                if (token.getType() == Token.Type.NEWLINE)
+                    line_number++;
             } while (token.getType() != Token.Type.EOF);
             System.out.println("End of Tokens----------");
 
-//            try {
-                SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(tokens);
-                syntaxAnalyzer.parse();
-//            }catch (Exception e){
-//                System.err.println(e);
-//            }
-//            Lexer lexer1 = new Lexer(codeBuilder.toString());
-////             Create a SyntaxAnalyzer instance
-//            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexer1);
-////             Parse the source code
-//            System.out.println("Parsing the source code...");
-//
-//            System.out.println(syntaxAnalyzer.lexer.input);
-//            syntaxAnalyzer.parse();
+            // try {
+            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(tokens);
+            syntaxAnalyzer.parse();
+            System.out.println("\n\nNo Errors");
+            // }catch (Exception e){
+            // System.err.println(e);
+            // }
+            // Lexer lexer1 = new Lexer(codeBuilder.toString());
+            //// Create a SyntaxAnalyzer instance
+            // SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexer1);
+            //// Parse the source code
+            // System.out.println("Parsing the source code...");
+            //
+            // System.out.println(syntaxAnalyzer.lexer.input);
+            // syntaxAnalyzer.parse();
 
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + filename);
@@ -72,13 +74,12 @@ public class Main {
             System.err.println("Error reading file: " + e.getMessage());
         }
 
-//        System.out.println("\nSimple Arithmetic Interpreter. Enter an arithmetic expression[e.g.\"(2+3)*5\"] to evaluate the result.");
-//        System.out.println("type END to quit program.\n");
-//        run();
+        // System.out.println("\nSimple Arithmetic Interpreter. Enter an arithmetic
+        // expression[e.g.\"(2+3)*5\"] to evaluate the result.");
+        // System.out.println("type END to quit program.\n");
+        // run();
 
     }
-
-
 
     /**
      * Runs the interpreter and prints result to console
@@ -91,13 +92,13 @@ public class Main {
 
             if (input.equals("END")) {
                 flag = false;
-            }
-            else if (input.equals("")) System.out.println(0);
+            } else if (input.equals(""))
+                System.out.println(0);
             else {
                 try {
                     System.out.println(ArithInterpreter.getResult(input));
 
-                    //System.out.println(ArithInterpreter.getLogicalResult(input));
+                    // System.out.println(ArithInterpreter.getLogicalResult(input));
                 } catch (Exception ignored) {
                     System.out.println("Invalid Input");
                 }
