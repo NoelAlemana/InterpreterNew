@@ -5,12 +5,14 @@ class SyntaxAnalyzer {
     private List<Token> tokens;
     private int currentTokenIndex;
     private boolean begin_code;
+    private boolean displayed;
     private Map<String, Token> variables;
     Scanner scanner;
     public SyntaxAnalyzer(List<Token> tokens) {
         this.tokens = tokens;
         this.currentTokenIndex = 0;
         this.begin_code = false;
+        this.displayed = false;
         this.variables = new HashMap<>();
         this.scanner = new Scanner(System.in);
 ;    }
@@ -74,7 +76,10 @@ class SyntaxAnalyzer {
 //                    System.out.println("\nFinished Coding");
                     if(currToken().getType() == Token.Type.NEWLINE) consume();
                     else error("Expected a NEWLINE");
-                    if(currToken().getType() == Token.Type.EOF) consume();
+                    if(currToken().getType() == Token.Type.EOF) {
+                        consume();
+                        if(displayed == false) System.out.println("No Error");
+                    }
                     else error("Expected a EOF");
                 }
                 else if(tokens.get(currentTokenIndex).getValue().equals("if")){ // END IF
@@ -100,6 +105,7 @@ class SyntaxAnalyzer {
         }
     }
     private void displayStatement(){
+        this.displayed = true;
         match(Token.Type.KEYWORD,"display");
         match(Token.Type.DELIMITER,":");
 
@@ -110,10 +116,8 @@ class SyntaxAnalyzer {
                 consume();
                 if(currToken().getType() == Token.Type.NEWLINE) break;
             }
-//            System.out.println(currToken()+"fsdfsf");
             if(currToken().getType() != Token.Type.NEWLINE)
                 match(Token.Type.CONCAT);
-//            for(Token token: tokens) System.out.println(token);
             if(tokens.size() == 1){
                 if(tokens.get(0).getType() == Token.Type.IDENTIFIER){
                     try{
@@ -128,7 +132,11 @@ class SyntaxAnalyzer {
                     else System.out.print(tokens.get(0).getValue());
                 }
             }else{
-                System.out.print(expression(tokens));
+                Object result = expression(tokens);
+                if(result.toString().equals("true") || result.toString().equals("false"))
+                    System.out.print(result.toString().toUpperCase());
+                else
+                    System.out.print(result);
             }
             tokens.clear();
         }
@@ -209,30 +217,6 @@ class SyntaxAnalyzer {
         }
         match(Token.Type.NEWLINE);
     }
-//    private void displayStatement() {
-////        System.out.println("Display");
-//        match(Token.Type.KEYWORD,"display");
-//        match(Token.Type.DELIMITER,":");
-//        while(currToken().getType() == Token.Type.IDENTIFIER || currToken().getType() == Token.Type.STRING|| currToken().getType() == Token.Type.CONCAT){
-//            if(currToken().getType() == Token.Type.IDENTIFIER){
-//                try{
-//                    System.out.print(variables.get(currToken().getValue()).getDataType());
-//                }catch (NullPointerException e){
-//                    if(variables.containsKey(currToken().getValue()))
-//                        System.out.print("null");
-//                    else throw new RuntimeException("Variable: "+ currToken().getValue() + " is not yet declared");
-//                }
-//                consume();
-//            }else if(currToken().getType() == Token.Type.CONCAT){
-//                consume();
-//            }else if(currToken().getType() == Token.Type.STRING){
-//                if(currToken().getValue().equals("$")) System.out.println("");
-//                else System.out.print(currToken().getValue());
-//                consume();
-//            }
-//        }
-//        match(Token.Type.NEWLINE);
-//    }
     private void declareStatement() {
         String datatype = currToken().getValue();
         Token.Type expectedDataType = null;
@@ -285,9 +269,12 @@ class SyntaxAnalyzer {
                         }
                     }
                     if((expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL) && (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT))
-                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
-                    if((currToken().getType() == Token.Type.CHAR || currToken().getType() == Token.Type.BOOL) && (expectedDataType == Token.Type.NUMBER || expectedDataType == Token.Type.FLOAT))
-                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken().getType());
+                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken());
+                    else if((currToken().getType() == Token.Type.CHAR || currToken().getType() == Token.Type.BOOL) && (expectedDataType == Token.Type.NUMBER || expectedDataType == Token.Type.FLOAT))
+                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken());
+                    else if ((expectedDataType == Token.Type.BOOL && currToken().getType() == Token.Type.CHAR) || (expectedDataType == Token.Type.CHAR && currToken().getType() == Token.Type.BOOL))
+                        throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken());
+
                 }
 
                 if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER && currToken().getType() != Token.Type.DELIMITER&& currToken().getType() != Token.Type.BOOL) {
@@ -373,6 +360,9 @@ class SyntaxAnalyzer {
                         consume();
                     }
                 }
+            }else if (currToken().getType() == Token.Type.CHAR){
+                tokens.add(currToken());
+                consume();
             }
         }
 //        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
@@ -384,21 +374,24 @@ class SyntaxAnalyzer {
                     if(token.getType() == Token.Type.IDENTIFIER) tokenValuesBuilder.append(variables.get(token.getValue()));
                     else tokenValuesBuilder.append(token.getValue());
                 }
-                if(isLogicalStatement(tokens)){
+                if(tokens.size() == 1){
+                    variables.get(var.getValue()).setValue(tokens.get(0).getValue());
+                }else if(isLogicalStatement(tokens)){
                     LogicalCalculator logicalCalculator = new LogicalCalculator();
-                    variables.get(var.getValue()).setValue(Boolean.toString(logicalCalculator.evaluate(tokens)));
-                }else if(containsFloat(tokens))
-                    try{
+                    variables.get(var.getValue()).setValue(Boolean.toString(logicalCalculator.evaluate(tokens)).toUpperCase());
+                }else if(containsFloat(tokens)) {
+                    try {
                         variables.get(var.getValue()).setValue(Double.toString(ArithInterpreter.getResult(tokenValuesBuilder.toString())));
                     } catch (Exception ignored) {
                         System.out.println("Invalid Input");
                     }
-                else
-                    try{
-                        variables.get(var.getValue()).setValue(Integer.toString((int)ArithInterpreter.getResult(tokenValuesBuilder.toString())));
+                }else {
+                    try {
+                        variables.get(var.getValue()).setValue(Integer.toString((int) ArithInterpreter.getResult(tokenValuesBuilder.toString())));
                     } catch (Exception ignored) {
                         System.out.println("Invalid Input");
                     }
+                }
             }
             else error("Variable: " + var +" must be declared first");
         }

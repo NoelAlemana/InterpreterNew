@@ -18,6 +18,12 @@ class Lexer {
 
         char currentChar = input.charAt(position);
         // Handle unary operators for numeric literals
+        // Handle newline characters
+        if (currentChar == '\n' ){
+            position++;
+            return new Token(Token.Type.NEWLINE, " ");
+        }
+
         if (currentChar == '-' || currentChar == '+') {
             if (position + 1 < input.length() && Character.isDigit(input.charAt(position + 1)) && isOperator(input.charAt(position-1))) {
                 StringBuilder numberBuilder = new StringBuilder();
@@ -228,13 +234,17 @@ class Lexer {
         if (currentChar == '[') {
             StringBuilder stringLiteralBuilder = new StringBuilder();
             position++;
-            while (position < input.length() && input.charAt(position) != ']') {
+            while (position < input.length()) {
+                if(input.charAt(position) == ']' && (nextChar() == '&' || nextChar() == '\n')) {
+                    position++;
+                    break;
+                }
                 stringLiteralBuilder.append(input.charAt(position));
                 position++;
             }
-            if (position < input.length() && input.charAt(position) == ']') {
+            System.out.println(stringLiteralBuilder.toString());
+            if (position < input.length() && getPrev() == ']') {
                 // Move past the closing bracket
-                position++;
                 return new Token(Token.Type.STRING, stringLiteralBuilder.toString());
             } else {
                 // Unterminated string literal (no closing bracket)
@@ -258,11 +268,7 @@ class Lexer {
             // Recursively call getNextToken to get the next token after the comment
             return getNextToken();
         }
-        // Handle newline characters
-        if (currentChar == '@' ){
-            position++;
-            return new Token(Token.Type.NEWLINE, String.valueOf(currentChar));
-        }
+
         // If none of the above, it's an invalid token
         position++;
         return new Token(Token.Type.EOF, String.valueOf(currentChar));
@@ -295,6 +301,33 @@ class Lexer {
         // Define your operator characters here
         return "+-*/() =".indexOf(c) != -1;
     }
+    private char nextChar() {
+        int temp = position+1;
+        while (position < input.length() && input.charAt(temp) == ' ') {
+            temp++;
+        }
+        if (temp < input.length()) {
+            return input.charAt(temp);
+        } else {
+            return '\0';
+        }
+    }
+    private char getPrev() {
+        int temp = position - 1;
+        // Loop to skip whitespace characters backwards
+        while (temp >= 0 && Character.isWhitespace(input.charAt(temp))) {
+            temp--;
+        }
+
+        // Check if we are still within the bounds of the input string
+        if (temp >= 0) {
+            return input.charAt(temp);
+        } else {
+            // If the start of input is reached or no non-whitespace character is found, return a special character
+            return '\0'; // Returning null character to indicate start of input or no non-whitespace character found
+        }
+    }
+
     private boolean isNewLineOrConcat(char c) {
         // Define your operator characters here
         return "@&".indexOf(c) != -1;

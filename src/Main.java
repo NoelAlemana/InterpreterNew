@@ -28,16 +28,15 @@ public class Main {
             String line;
             // Read each line from the file and append it to the StringBuilder
             while ((line = bufferedReader.readLine()) != null) {
-                codeBuilder.append(line).append("@\n");
+                codeBuilder.append(line).append("\n");
             }
-
             // Close the BufferedReader
             bufferedReader.close();
             // Create a Lexer instance
             //System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
-            System.out.println("Tokens:-----------------");
+//            System.out.println("Tokens:-----------------");
             Token token;
             int index = 0; // Initialize index counter
             int line_number = 1;
@@ -45,18 +44,18 @@ public class Main {
                 token = lexer.getNextToken();
                 token.setLine(line_number);
                 tokens.add(token);
-                System.out.println(token + " Index: " + index);
+//                System.out.println(token + " Index: " + index);
                 index++;
                 if(token.getType() == Token.Type.NEWLINE) line_number++;
             } while (token.getType() != Token.Type.EOF);
-            System.out.println("End of Tokens----------");
+//            System.out.println("End of Tokens----------");
 
-//            try {
+            try {
                 SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(tokens);
                 syntaxAnalyzer.parse();
-//            }catch (Exception e){
-//                System.err.println(e);
-//            }
+            }catch (Exception e){
+                System.err.println(e);
+            }
 //            Lexer lexer1 = new Lexer(codeBuilder.toString());
 ////             Create a SyntaxAnalyzer instance
 //            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexer1);

@@ -47,7 +47,7 @@ class Token {
                 }
                 break;
             case BOOL:
-                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+                if (value.equals("TRUE") || value.equals("FALSE")) {
                     this.value = value;
                 } else {
                     throw new IllegalArgumentException("Invalid BOOL token value: " + value);
@@ -91,7 +91,7 @@ class Token {
                 return Float.parseFloat(value);
             case BOOL:
                 if (value != null) {
-                    return Boolean.parseBoolean(value);
+                    return value.toUpperCase();
                 } else {
                     return null;
                 }
