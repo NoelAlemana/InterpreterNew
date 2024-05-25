@@ -66,9 +66,6 @@ class SyntaxAnalyzer {
                     if(currToken().getType() == Token.Type.NEWLINE) consume();
                     else error("Expected a NEWLINE");
                 }
-                else if(tokens.get(currentTokenIndex).getValue().equals("if")){ // BEGIN IF
-
-                }
             } else if (currentToken.getType() == Token.Type.KEYWORD && currentToken.getValue().equals("end")) {
                 consume();
                 if(tokens.get(currentTokenIndex).getValue().equals("code")){
@@ -146,20 +143,15 @@ class SyntaxAnalyzer {
         match(Token.Type.KEYWORD,"while");
         List<Token> expressionTokens = new LinkedList<>();
         while(currToken().getType()!= Token.Type.NEWLINE){
-//            System.out.println("Current: "+currToken());
             expressionTokens.add(currToken());
             consume();
         }
         match(Token.Type.NEWLINE);
-        for (Token token: expressionTokens) {
-//            System.out.println(token+" Expression tokens");
-        }
         match(Token.Type.KEYWORD,"begin");
         match(Token.Type.KEYWORD,"while");
         match(Token.Type.NEWLINE);
         int startwhileIndex = currentTokenIndex;
         int nestedCount = 0;
-
         while(true){
             if(currToken().getValue().equals("begin") && peek().getValue().equals("while"))
                 nestedCount++;
@@ -170,31 +162,14 @@ class SyntaxAnalyzer {
             }
             consume();
         }
-//        System.out.println("Cur: "+ currToken());
-//        System.out.println("Peek: "+ peek());
-
         int endwhileIndex = currentTokenIndex;
-
-//        System.out.println("First Result: "+expression(expressionTokens));
-
         while (Boolean.parseBoolean(expression(expressionTokens).toString())){
-//            System.out.println("Result: "+expression(expressionTokens));
             currentTokenIndex = startwhileIndex;
-//            parse();
-//            parseFromTo(startwhileIndex,endwhileIndex);
             for(int i=0;i< countNewline(startwhileIndex,endwhileIndex);i++){
                 statement();
             }
         }
-//        System.out.println("Start: "+ startwhileIndex);
-//        System.out.println("End: "+ endwhileIndex);
-
-        //match(Token.Type.NEWLINE);
         currentTokenIndex = endwhileIndex;
-
-        //System.out.println(currToken());
-
-
     }
     private void scanStatement() {
 //        System.out.println("Display");
@@ -203,7 +178,6 @@ class SyntaxAnalyzer {
         while(currToken().getType() == Token.Type.IDENTIFIER || currToken().getType() == Token.Type.DELIMITER){
             if(currToken().getType() == Token.Type.IDENTIFIER){
                 try{
-//                    System.out.println(currToken().getValue());
                     if(variables.containsKey(currToken().getValue())){
                         String newValue = scanner.nextLine();
                         variables.get(currToken().getValue()).setValue(newValue);
@@ -234,17 +208,14 @@ class SyntaxAnalyzer {
                 expectedDataType = Token.Type.CHAR;
                 break;
         }
-//        System.out.println("expected data type: " + datatype);
         consume(); //Consume INT,FLOAT,CHAR,BOOL token
         while(currToken().getType() != Token.Type.NEWLINE){
             if(currToken().getValue().equals(","))match(Token.Type.DELIMITER);
             String varname = currToken().getValue();
-//            System.out.println(varname+ "Varname");
             match(Token.Type.IDENTIFIER);
             if(currToken().getValue() == "="){
                 consume(); // Consume ASSIGNMENT token
                 if(variables.containsKey(varname))throw new IllegalArgumentException("Variable name: " + varname + " is already declared");
-                if(expectedDataType == Token.Type.FLOAT && currToken().getType() == Token.Type.NUMBER) currToken().setType(Token.Type.FLOAT);
                 if(currToken().getType() != expectedDataType ){
                     if(currToken().getType() == Token.Type.IDENTIFIER){
                         try {
@@ -268,6 +239,7 @@ class SyntaxAnalyzer {
                             error("Error causing token:" +currToken());
                         }
                     }
+                    // Checking Unmatched Datatype
                     if((expectedDataType == Token.Type.CHAR || expectedDataType == Token.Type.BOOL) && (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT))
                         throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken());
                     else if((currToken().getType() == Token.Type.CHAR || currToken().getType() == Token.Type.BOOL) && (expectedDataType == Token.Type.NUMBER || expectedDataType == Token.Type.FLOAT))
@@ -276,11 +248,7 @@ class SyntaxAnalyzer {
                         throw new IllegalArgumentException("Unmatched datatype Expected datatype: "+expectedDataType + " Defined datatype: "+currToken());
 
                 }
-
-                if(peek().getType() != Token.Type.OPERATOR && currToken().getType() != Token.Type.IDENTIFIER && currToken().getType() != Token.Type.DELIMITER&& currToken().getType() != Token.Type.BOOL) {
-                    if(expectedDataType == Token.Type.NUMBER){
-                        currToken().setValue(Integer.toString((int)currToken().getDataType()));
-                    }
+                if(currToken().getType() == Token.Type.CHAR) {
                     variables.put(varname, currToken());
                     consume();
                 }else {
@@ -331,10 +299,9 @@ class SyntaxAnalyzer {
                 consume(); // Consume the ASSIGNMENT token
             }else if (currToken().getType() == Token.Type.IDENTIFIER && peek().getType() != Token.Type.OPERATOR&& peek().getType() != Token.Type.NEWLINE&& peek().getType() != Token.Type.DELIMITER) {
                 identifiers.add(currToken());
-                consume(); // Consume the ASSIGNMENT token
+                consume(); // Consume the IDENTIFIER token
             }else if (currToken().getType() == Token.Type.NUMBER || currToken().getType() == Token.Type.FLOAT || currToken().getType() == Token.Type.DELIMITER || currToken().getType() == Token.Type.BOOL|| currToken().getType() == Token.Type.IDENTIFIER){
                 while(currToken().getType() != Token.Type.NEWLINE){
-
                     if(peek().getValue().equals(">") ||peek().getValue().equals("<") ||peek().getValue().equals("<>") ||peek().getValue().equals("==") ||peek().getValue().equals(">=") ||peek().getValue().equals("<=")||peek().getValue().equals("and")||peek().getValue().equals("or")){
                         tokens.add(new Token(Token.Type.DELIMITER,"("));
                         if(currToken().getType() == Token.Type.IDENTIFIER) {
@@ -350,12 +317,9 @@ class SyntaxAnalyzer {
                         tokens.add(new Token(Token.Type.DELIMITER,")"));
                     }
                     if(currToken().getType() == Token.Type.IDENTIFIER){
-//                        System.out.println(variables.get(currToken().getValue()));
                         tokens.add(variables.get(currToken().getValue()));
                         consume();
                     }else{
-//                        System.out.println(currToken()+"Peeking");
-
                         tokens.add(currToken());
                         consume();
                     }
@@ -365,7 +329,6 @@ class SyntaxAnalyzer {
                 consume();
             }
         }
-//        for(Token token: tokens) System.out.println(token+"TOKEN EXPRESSION");
         for(Token var: identifiers){
             if(variables.containsKey(var.getValue())){
                 StringBuilder tokenValuesBuilder = new StringBuilder();
@@ -399,12 +362,11 @@ class SyntaxAnalyzer {
     }
 
     private void ifStatement() {
-        //Issues: IF(True), ELSE IF(T). Both will execute
         match(Token.Type.KEYWORD, "if");
         match(Token.Type.DELIMITER, "(");
         Boolean parseStatement = ifExpression();
         match(Token.Type.DELIMITER, ")");
-        consume(); //the consume function calls just consume the newlines (it throws an error if you dont consume the newline)
+        consume();
         match(Token.Type.KEYWORD, "begin");
         match(Token.Type.KEYWORD, "if");
         consume();
@@ -413,12 +375,8 @@ class SyntaxAnalyzer {
                 statement();
             }
         } else{
-//            while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
-//                consume();
-//            }
             int nestedCount = 0;
             while(true){
-//                System.out.println("Concomed: " + currToken() + " Count: " + nestedCount);
                 if(currToken().getValue().equals("begin") && peek().getValue().equals("if"))
                     nestedCount++;
                 if(currToken().getValue().equals("end") && peek().getValue().equals("if"))
@@ -434,8 +392,8 @@ class SyntaxAnalyzer {
         consume();
         List<Boolean> ifelseResult = new LinkedList<>();
         ifelseResult.add(parseStatement);
-//        check for multiple alternatives
 
+//        check for multiple alternatives
         while (true) {
             if(currToken().getType() == Token.Type.KEYWORD && currToken().getValue().equals("else")){ //if else keyword encountered
                 consume();
@@ -453,9 +411,6 @@ class SyntaxAnalyzer {
                             statement();
                         }
                     } else {
-//                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
-//                            consume();
-//                        }
                         int nestedCount = 0;
                         while(true){
                             if(currToken().getValue().equals("begin") && peek().getValue().equals("if"))
@@ -477,14 +432,9 @@ class SyntaxAnalyzer {
                     match(Token.Type.KEYWORD, "begin");
                     match(Token.Type.KEYWORD, "if");
                     consume();
-//                    System.out.println(ifelseResult.contains(true));
                     if(ifelseResult.contains(true)){
-//                        while (currToken().getType() != Token.Type.KEYWORD || !currToken().getValue().equals("end")) {
-//                            consume();
-//                        }
                         int nestedCount = 0;
                         while(true){
-//                System.out.println("Concomed: " + currToken() + " Count: " + nestedCount);
                             if(currToken().getValue().equals("begin") && peek().getValue().equals("if"))
                                 nestedCount++;
                             if(currToken().getValue().equals("end") && peek().getValue().equals("if"))
@@ -519,23 +469,17 @@ class SyntaxAnalyzer {
                 Token tok = variables.get(token.getValue());
                 if(tok != null)
                 tokens.add(variables.get(token.getValue()));
-                else
-                error(token + " is not declared");
+                else error(token + " is not declared");
             }
             else tokens.add(token);
         }
-
-
         StringBuilder tokenValuesBuilder = new StringBuilder();
         for (Token token: tokens){
             tokenValuesBuilder.append(token.getValue());
         }
-//        System.out.println(tokenValuesBuilder.toString());
         Object result = null;
         if(isLogicalStatement(tokens)){
             LogicalCalculator logicalCalculator = new LogicalCalculator();
-//            result = Boolean.toString(logicalCalculator.evaluate(tokens));
-//            System.out.println(tokens.get(0).getValue()+": first");
             List<Token> logicalTokens = new LinkedList<>();
             for(int i=0;i< tokens.size();i++){
                 if(i<tokens.size()-1) {
@@ -558,11 +502,7 @@ class SyntaxAnalyzer {
                         logicalTokens.add(tokens.get(i));
                     }
                 }
-                if(i == tokens.size()-1)
-                logicalTokens.add(tokens.get(i));
-            }
-            for (Token tok: logicalTokens){
-//                System.out.println(tok.getValue() + "    statement");
+                if(i == tokens.size()-1) logicalTokens.add(tokens.get(i));
             }
 
             result = Boolean.toString(logicalCalculator.evaluate(logicalTokens));
@@ -584,20 +524,12 @@ class SyntaxAnalyzer {
     }
 
     private boolean ifExpression(){
-//        System.out.println("nisud sa if");
-
         LogicalCalculator logicalCalculator = new LogicalCalculator();
         List<Token> tokensForIf = new LinkedList<>();
-
         while(peek().getType()!=Token.Type.NEWLINE && currToken().getValue()!=")"){
-//            System.out.print(currToken().getValue());
              tokensForIf.add(currToken());
             consume();
         }
-        for (Token token : tokensForIf) {
-//            System.out.println(token);
-        }
-//        System.out.println("\nResult: "+ logicalCalculator.evaluate(tokensForIf));
         return Boolean.parseBoolean(expression(tokensForIf).toString());
     }
 
@@ -654,14 +586,6 @@ class SyntaxAnalyzer {
     }
 
     private void consume() {
-//        System.out.print("Consumed Token:");
-//        System.out.println(tokens.get(currentTokenIndex));
-        currentTokenIndex++;
-    }
-
-    private void consumePrint() {
-        System.out.print("Consumed Token:");
-        System.out.println(tokens.get(currentTokenIndex));
         currentTokenIndex++;
     }
     private void error(String message) {

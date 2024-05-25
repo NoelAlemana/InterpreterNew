@@ -33,7 +33,6 @@ public class Main {
             // Close the BufferedReader
             bufferedReader.close();
             // Create a Lexer instance
-            //System.out.println(codeBuilder.toString());
             Lexer lexer = new Lexer(codeBuilder.toString());
             List<Token> tokens = new ArrayList<>();
 //            System.out.println("Tokens:-----------------");
@@ -56,14 +55,7 @@ public class Main {
             }catch (Exception e){
                 System.err.println(e);
             }
-//            Lexer lexer1 = new Lexer(codeBuilder.toString());
-////             Create a SyntaxAnalyzer instance
-//            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexer1);
-////             Parse the source code
-//            System.out.println("Parsing the source code...");
-//
-//            System.out.println(syntaxAnalyzer.lexer.input);
-//            syntaxAnalyzer.parse();
+
 
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + filename);

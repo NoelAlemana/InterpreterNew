@@ -242,7 +242,6 @@ class Lexer {
                 stringLiteralBuilder.append(input.charAt(position));
                 position++;
             }
-            System.out.println(stringLiteralBuilder.toString());
             if (position < input.length() && getPrev() == ']') {
                 // Move past the closing bracket
                 return new Token(Token.Type.STRING, stringLiteralBuilder.toString());

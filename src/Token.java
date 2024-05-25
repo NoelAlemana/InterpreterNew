@@ -1,3 +1,5 @@
+import java.util.InputMismatchException;
+
 class Token {
     enum Type {
         IDENTIFIER,
@@ -35,7 +37,7 @@ class Token {
                 if (value.length() == 1) {
                     this.value = value;
                 } else {
-                    throw new IllegalArgumentException("Invalid CHAR token value: " + value);
+                    throw new IllegalArgumentException("Invalid CHAR value: " + value);
                 }
                 break;
             case FLOAT:
@@ -43,14 +45,14 @@ class Token {
                     Float.parseFloat(value);
                     this.value = value;
                 } catch (NumberFormatException e) {
-                    throw new NumberFormatException("Invalid FLOAT token value: " + value);
+                    throw new NumberFormatException("Invalid FLOAT value: " + value);
                 }
                 break;
             case BOOL:
                 if (value.equals("TRUE") || value.equals("FALSE")) {
                     this.value = value;
                 } else {
-                    throw new IllegalArgumentException("Invalid BOOL token value: " + value);
+                    throw new IllegalArgumentException("Invalid BOOL value: " + value);
                 }
                 break;
             case NUMBER:
@@ -58,12 +60,7 @@ class Token {
                     Integer.parseInt(value);
                     this.value = value;
                 } catch (NumberFormatException e) {
-                    try {
-                        Float.parseFloat(value);
-                        this.value = value;
-                    } catch (NumberFormatException ex) {
-                        throw new NumberFormatException("Invalid NUMBER token value: " + value);
-                    }
+                    throw new InputMismatchException(value + " cannot be converted into INT");
                 }
                 break;
             default:
