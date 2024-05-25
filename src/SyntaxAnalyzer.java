@@ -172,7 +172,6 @@ class SyntaxAnalyzer {
         currentTokenIndex = endwhileIndex;
     }
     private void scanStatement() {
-//        System.out.println("Display");
         match(Token.Type.KEYWORD,"scan");
         match(Token.Type.DELIMITER,":");
         while(currToken().getType() == Token.Type.IDENTIFIER || currToken().getType() == Token.Type.DELIMITER){
