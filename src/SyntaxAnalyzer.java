@@ -124,7 +124,7 @@ class SyntaxAnalyzer {
                             System.out.print("null");
                         else throw new RuntimeException("Variable: "+ tokens.get(0) + " is not yet declared");
                     }
-                }else if(tokens.get(0).getType() == Token.Type.STRING){
+                }else if(tokens.get(0).getType() == Token.Type.STRING || tokens.get(0).getType() == Token.Type.CHAR){
                     if(tokens.get(0).getValue().equals("$")) System.out.println("");
                     else System.out.print(tokens.get(0).getValue());
                 }
